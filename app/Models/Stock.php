@@ -2,40 +2,39 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Stock extends Model
 {
-    use HasFactory;
-
     public $timestamps = false;
 
-    public $incrementing = false;
-
-    /**
-     * Указываем составной первичный ключ
-     */
-    protected $primaryKey = ['product_id', 'warehouse_id'];
-
     protected $fillable = [
-        'product_id',
         'warehouse_id',
+        'product_id',
         'stock',
     ];
 
-    protected $casts = [
-        'stock' => 'integer',
-    ];
+    // Указываем, что у модели нет автоинкрементного id
+    public $incrementing = false;
 
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class);
-    }
+    // Указываем составной первичный ключ (для корректной работы update/save)
+    protected $primaryKey = ['product_id', 'warehouse_id'];
 
-    public function warehouse(): BelongsTo
+    /**
+     * Переопределяем метод получения ключа для сохранения, 
+     * чтобы Eloquent корректно работал с составным ключом.
+     */
+    protected function setKeysForSaveQuery($query)
     {
-        return $this->belongsTo(Warehouse::class);
+        $keys = $this->getKeyName();
+        if (!is_array($keys)) {
+            return parent::setKeysForSaveQuery($query);
+        }
+
+        foreach ($keys as $key) {
+            $query->where($key, '=', $this->getAttribute($key));
+        }
+
+        return $query;
     }
 }

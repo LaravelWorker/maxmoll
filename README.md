@@ -19,7 +19,7 @@
 
 ## 🛠 Технологический стек
 
-* **Backend:** PHP 8.2+, Laravel 10+, MySQL / PostgreSQL
+* **Backend:** PHP 8.2+, Laravel 10+, MySQL
 * **Frontend:** Vue 3 (Composition API), Vite, Bootstrap 5, Axios
 * **API Doc:** Scramble (OpenAPI 3.0 / Stoplight Elements)
 

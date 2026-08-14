@@ -20,15 +20,15 @@ class CustomerController extends Controller
         $query = Customer::query();
 
         if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . $request->input('name') . '%');
+            $query->where('name', 'like', "%$request->input('name')%");
         }
 
         if ($request->filled('phone')) {
-            $query->where('phone', 'like', '%' . $request->input('phone') . '%');
+            $query->where('phone', 'like', "%$request->input('phone')%");
         }
 
         if ($request->filled('email')) {
-            $query->where('email', 'like', '%' . $request->input('email') . '%');
+            $query->where('email', 'like', "%$request->input('email')%");
         }
 
         if ($request->filled('search')) {

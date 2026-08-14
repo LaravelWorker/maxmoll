@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
@@ -29,10 +30,9 @@ class Product extends Model
     /**
      * Склады, на которых есть данный товар (с указанием остатка)
      */
-    public function warehouses(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function warehouses(): BelongsToMany
     {
-        return $this->belongsToMany(Warehouse::class, 'stocks')
-                    ->withPivot('stock')
-                    ->withTimestamps();
+        return $this->belongsToMany(Warehouse::class, 'stocks', 'product_id', 'warehouse_id')
+            ->withPivot(['stock']);
     }
 }
