@@ -1,10 +1,10 @@
 <template>
   <div class="modal fade show d-block tab-index-1" style="background: rgba(0,0,0,0.5);">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" style="margin-top: 200px;">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            {{ isEdit ? `Редактирование Заказа #${order.id}` : 'Создание Нового Заказа' }}
+            {{ isEdit ? `Редактирование Заказа #${order.id}` : 'Создание нового заказа' }}
           </h5>
           <button type="button" class="btn-close" @click="$emit('close')"></button>
         </div>

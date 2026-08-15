@@ -10,3 +10,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [WarehouseController::class, 'index']);
+Route::get('/products', [WarehouseController::class, 'products']);
+Route::get('/stocks', [WarehouseController::class, 'stocks']);
+Route::post('/transfers', [WarehouseController::class, 'storeTransfer']);

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Модель Stock (складской остаток).
@@ -50,6 +51,22 @@ class Stock extends Model
      * @var array<int, string>
      */
     protected $primaryKey = ['product_id', 'warehouse_id'];
+
+    /**
+     * Товар, к которому относится этот остаток.
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    /**
+     * Склад, на котором находится этот остаток.
+     */
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
 
     /**
      * Переопределяем метод формирования запроса для сохранения/обновления модели, 

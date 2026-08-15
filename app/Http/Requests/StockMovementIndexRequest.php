@@ -17,7 +17,6 @@ class StockMovementIndexRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Доступ к просмотру истории движений открыт, дополнительная авторизация не требуется
         return true;
     }
 

@@ -17,8 +17,6 @@ class CustomerIndexRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // В нашем приложении строгая авторизация для этого эндпоинта не требуется, 
-        // поэтому всегда разрешаем выполнение запроса.
         return true;
     }
 

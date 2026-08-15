@@ -9,15 +9,15 @@ use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\Stock;
+use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
-use App\Services\StockService;
 
 class OrderController extends Controller
 {
+
     /**
      * Получить список заказов с фильтрацией и пагинацией.
      *
@@ -30,200 +30,120 @@ class OrderController extends Controller
      */
     public function index(OrderIndexRequest $request): AnonymousResourceCollection
     {
-        // Базовый запрос с необходимыми связями для ответа
         $query = Order::query()->with(['customer', 'warehouse', 'items.product']);
 
-        // Фильтрация по статусу заказа, если указан
+        // Фильтрация по названию покупателя
+        if ($request->filled('customer_search')) {
+            $customerSearch = $request->input('customer_search');
+            $query->whereHas('customer', function ($q) use ($customerSearch) {
+                $q->where('name', 'like', "%{$customerSearch}%");
+            });
+        }
+
+        // Фильтрация по названию склада
+        if ($request->filled('warehouse_search')) {
+            $warehouseSearch = $request->input('warehouse_search');
+            $query->whereHas('warehouse', function ($q) use ($warehouseSearch) {
+                $q->where('name', 'like', "%{$warehouseSearch}%");
+            });
+        }
+
+        // Фильтрация по статусу
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
 
-        // Фильтрация по идентификатору клиента
-        if ($request->filled('customer_id')) {
-            $query->where('customer_id', $request->input('customer_id'));
-        }
-
-        // Фильтрация по складу
-        if ($request->filled('warehouse_id')) {
-            $query->where('warehouse_id', $request->input('warehouse_id'));
-        }
-
-        // Фильтрация по дате от
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->input('date_from'));
-        }
-
-        // Фильтрация по дате до
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->input('date_to'));
-        }
-
-        // Параметр пагинации (количество элементов на страницу)
+        // Параметр пагинации по умолчанию — 15 элементов на страницу
         $perPage = $request->input('per_page', 15);
 
-        // Сортируем по убыванию id и выполняем пагинацию
+        // Сортировка по последнему идентификатору и пагинация списка
         $orders = $query->orderByDesc('id')->paginate($perPage);
 
-        // Возвращаем коллекцию ресурсов заказов
+        // Возвращаем ответ в виде ресурса заказа
         return OrderResource::collection($orders);
     }
 
     /**
      * Создать новый заказ.
      *
-     * Оборачивает создание заказа и его позиций в транзакцию, чтобы
-     * обеспечить целостность данных. Входные данные валидируются
-     * через `StoreOrderRequest`.
-     *
-     * @param  \App\Http\Requests\StoreOrderRequest  $request  Валидированные данные для создания заказа
-     * @return \App\Http\Resources\OrderResource  Созданный ресурс заказа
+     * @param StoreOrderRequest $request
+     * @param OrderService $orderService
+     * @return OrderResource|JsonResponse
      */
-    public function store(StoreOrderRequest $request): OrderResource
+    public function store(StoreOrderRequest $request, OrderService $orderService): OrderResource|JsonResponse
     {
-        // Создаём заказ в транзакции, чтобы при ошибке откатить все изменения
-        $order = DB::transaction(function () use ($request) {
-            // Создаем основную запись заказа
-            $order = Order::create([
-                'customer_id'  => $request->input('customer_id'),
-                'warehouse_id' => $request->input('warehouse_id'),
-                'status'       => OrderStatus::ACTIVE->value,
-                'created_at'   => now(),
-            ]);
+        try {
+            // Передаём бизнес-логику создания заказа в сервис
+            $order = $orderService->create($request->validated());
 
-            // Преобразуем входные позиции в формат для массового создания
-            $itemsData = array_map(function ($item) {
-                return [
-                    'product_id' => $item['product_id'],
-                    'count'      => $item['count'],
-                ];
-            }, $request->input('items'));
+            // Подгружаем связи для ответа
+            $order->load(['customer', 'warehouse', 'items.product']);
 
-            // Создаём позиции заказа
-            $order->items()->createMany($itemsData);
-
-            return $order;
-        });
-
-        // Подгружаем связи для корректного формирования ответа
-        $order->load(['customer', 'warehouse', 'items.product']);
-
-        return OrderResource::make($order);
+            // Возвращаем созданный заказ как JSON-ресурс
+            return OrderResource::make($order);
+        } catch (\Exception $e) {
+            // В случае ошибки формируем понятный JSON-ответ клиенту
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
      * Обновить заказ.
      *
-     * Проверяет, что заказ находится в статусе `ACTIVE` перед редактированием,
-     * затем в транзакции обновляет основные поля и при необходимости
-     * пересоздаёт позиции заказа.
-     *
-     * @param  \App\Http\Requests\UpdateOrderRequest  $request  Валидированные изменения
-     * @param  \App\Models\Order  $order  Модель заказа для обновления
-     * @return \App\Http\Resources\OrderResource|\Illuminate\Http\JsonResponse  Обновлённый ресурс или JSON с ошибкой
+     * @param UpdateOrderRequest $request
+     * @param Order $order
+     * @param OrderService $orderService
+     * @return OrderResource|JsonResponse
      */
-    public function update(UpdateOrderRequest $request, Order $order): OrderResource|JsonResponse
+    public function update(UpdateOrderRequest $request, Order $order, OrderService $orderService): OrderResource|JsonResponse
     {
-        // Нельзя редактировать завершенные или отмененные заказы
-        if ($order->status !== OrderStatus::ACTIVE) {
+        try {
+            // Обновляем заказ через сервис и получаем актуальную модель
+            $order = $orderService->update($order, $request->validated());
+
+            // Подгружаем связанные данные для ответа
+            $order->load(['customer', 'warehouse', 'items.product']);
+
+            // Возвращаем обновлённый заказ
+            return OrderResource::make($order);
+        } catch (\Exception $e) {
+            // Возвращаем сообщение об ошибке в одном формате
             return response()->json([
-                'message' => 'Нельзя редактировать выполненный или отмененный заказ.',
+                'message' => $e->getMessage(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        // Обновляем заказ и его позиции в транзакции
-        DB::transaction(function () use ($request, $order) {
-            // Обновляем основные поля заказа
-            $order->update($request->only(['customer_id', 'warehouse_id']));
-
-            // Если переданы позиции — удаляем старые и создаём новые
-            if ($request->has('items')) {
-                $order->items()->delete();
-
-                $itemsData = array_map(function ($item) {
-                    return [
-                        'product_id' => $item['product_id'],
-                        'count'      => $item['count'],
-                    ];
-                }, $request->input('items'));
-
-                $order->items()->createMany($itemsData);
-            }
-        });
-
-        // Подгружаем связи для ответа
-        $order->load(['customer', 'warehouse', 'items.product']);
-
-        return OrderResource::make($order);
     }
 
     /**
      * Завершить заказ (списание остатков со склада).
      *
-     * В транзакции проверяет наличие достаточных остатков по каждой позиции,
-     * блокируя запись `Stock` для безопасного обновления, уменьшает остатки
-     * и регистрирует изменение через `StockService`. В случае ошибки
-     * выбрасывается исключение и транзакция откатывается.
+     * Метод делегирует всю бизнес-логику завершения заказа в OrderService
+     * (транзакция, pessimistic locking, списание остатков, Ledger и обновление статуса).
      *
-     * @param  \App\Models\Order  $order  Заказ для завершения
-     * @param  \App\Services\StockService  $stockService  Сервис для регистрации изменений стока
-     * @return \App\Http\Resources\OrderResource|\Illuminate\Http\JsonResponse  Обновлённый ресурс или JSON с ошибкой
+     * @param \App\Models\Order $order Заказ для завершения
+     * @param \App\Services\OrderService $orderService Сервис управления заказами
+     * @return \App\Http\Resources\OrderResource|\Illuminate\Http\JsonResponse Обновлённый ресурс или JSON с ошибкой
      */
-    public function complete(Order $order, StockService $stockService): OrderResource|JsonResponse
+    public function complete(Order $order, OrderService $orderService): OrderResource|JsonResponse
     {
-        // Разрешено завершать только активные заказы
-        if ($order->status !== OrderStatus::ACTIVE) {
-            return response()->json([
-                'message' => 'Завершить можно только заказ в статусе "active".',
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         try {
-            DB::transaction(function () use ($order, $stockService) {
-                // Получаем позиции заказа
-                $items = $order->items;
+            // Выполняем бизнес-логику через сервисный слой
+            $order = $orderService->complete($order);
 
-                foreach ($items as $item) {
-                    // Блокируем запись остатка для безопасного обновления
-                    $stock = Stock::where('product_id', $item->product_id)
-                        ->where('warehouse_id', $order->warehouse_id)
-                        ->lockForUpdate()
-                        ->first();
+            // Подгружаем связи для формирования ответа
+            $order->load(['customer', 'warehouse', 'items.product']);
 
-                    // Если остатков недостаточно — прерываем с ошибкой
-                    if (!$stock || $stock->stock < $item->count) {
-                        $available = $stock ? $stock->stock : 0;
-                        throw new \Exception("Недостаточно товара (ID: {$item->product_id}) на складе (ID: {$order->warehouse_id}). В наличии: {$available}, требуется: {$item->count}");
-                    }
+            // Возвращаем завершённый заказ в API-формате
+            return OrderResource::make($order);
 
-                    // Списываем остаток
-                    $stock->decrement('stock', $item->count);
-
-                    // Регистрируем изменение через сервис (для истории/логов)
-                    $stockService->changeStock(
-                        $order->warehouse_id,
-                        $item->product_id,
-                        -$item->count,
-                        $order
-                    );
-                }
-
-                // Отмечаем заказ как выполненный и записываем время выполнения
-                $order->update([
-                    'status'       => OrderStatus::COMPLETED->value,
-                    'completed_at' => now(),
-                ]);
-            });
         } catch (\Exception $e) {
-            // При ошибке возвращаем сообщение клиента с HTTP 422
+            // При ошибке (нехватка остатков, неверный статус) возвращаем HTTP 422
             return response()->json([
                 'message' => $e->getMessage(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        // Подгружаем связи для формирования ответа
-        $order->load(['customer', 'warehouse', 'items.product']);
-
-        return OrderResource::make($order);
     }
 
     /**
@@ -276,5 +196,42 @@ class OrderController extends Controller
         $order->delete();
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Возобновить отмененный заказ.
+     *
+     * Метод переводит заказ из статуса 'canceled' обратно в 'active'.
+     *
+     * @param \App\Models\Order $order
+     * @return \App\Http\Resources\OrderResource|\Illuminate\Http\JsonResponse
+     */
+    public function restore(Order $order): OrderResource|JsonResponse
+    {
+        // Возобновить можно только отмененный заказ
+        if ($order->status !== OrderStatus::CANCELED) {
+            return response()->json([
+                'message' => 'Возобновить можно только заказ в статусе "canceled".',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            // Меняем статус на активный
+            $order->update([
+                'status' => OrderStatus::ACTIVE->value,
+            ]);
+
+            // Подгружаем связи для корректного ответа
+            $order->load(['customer', 'warehouse', 'items.product']);
+
+            // Возвращаем обновлённый заказ
+            return OrderResource::make($order);
+
+        } catch (\Exception $e) {
+            // Возвращаем описание ошибки при сбое операции
+            return response()->json([
+                'message' => 'Ошибка при возобновлении заказа: ' . $e->getMessage(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }

@@ -6,11 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSupplyRequest;
 use App\Http\Requests\SupplyIndexRequest;
 use App\Http\Resources\SupplyResource;
-use App\Models\Stock;
-use App\Services\StockService;
+use App\Services\SupplyService;
 use App\Models\Supply;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\DB;
 
 class SupplyController extends Controller
 {
@@ -56,50 +54,24 @@ class SupplyController extends Controller
     /**
      * Создать новую поставку товаров на склад и пополнить остатки.
      *
-     * Метод создает документ поставки, сохраняет входящие товарные позиции и в рамках 
-     * единой транзакции базы данных через StockService увеличивает количество остатков 
-     * на указанном складе, одновременно фиксируя историю движений (Ledger).
+     * Метод обрабатывает входящий запрос на поставку товаров, делегируя 
+     * всю бизнес-логику (транзакцию, создание позиций, проводки в Ledger и обновление stocks) в SupplyService.
      *
-     * @params StoreSupplyRequest $request Валидированный запрос, содержащий склад и список поступающих товаров
-     * @params StockService $stockService Сервис для изменения складских остатков и ведения аудита
+     * @param StoreSupplyRequest $request Валидированный запрос, содержащий склад и список поступающих товаров
+     * @param SupplyService $supplyService Сервис проведения документов поставок
      * @return SupplyResource Ресурс созданной поставки со всеми связанными данными и статусом 201
      * 
      * @throws \Throwable Выбрасывается в случае сбоя транзакции базы данных
      */
-    public function store(StoreSupplyRequest $request, StockService $stockService): SupplyResource
+    public function store(StoreSupplyRequest $request, SupplyService $supplyService): SupplyResource
     {
-        // Выполняем создание поставки и обновление складских остатков атомарно в транзакции
-        $supply = DB::transaction(function () use ($request, $stockService) {
-            $warehouseId = $request->input('warehouse_id');
-
-            // 1. Создаем основной документ поставки
-            $supply = Supply::create([
-                'warehouse_id' => $warehouseId,
-                'created_at'   => now(),
-            ]);
-
-            // 2. Итерируем по списку товаров и создаем позиции поставки
-            foreach ($request->input('items') as $item) {
-                $supply->items()->create([
-                    'product_id' => $item['product_id'],
-                    'count'      => $item['count'],
-                ]);
-
-                // 3. Увеличиваем остаток товара на складе и фиксируем движение (положительное количество)
-                $stockService->changeStock(
-                    $warehouseId,
-                    $item['product_id'],
-                    $item['count'],
-                    $supply
-                );
-            }
-
-            return $supply;
-        });
+        // Выполняем бизнес-логику создания и проведения через сервисный слой
+        $supply = $supplyService->createAndExecute($request->validated());
 
         // Подгружаем актуальные связи для формирования корректного ответа клиенту
         $supply->load(['warehouse', 'items.product']);
 
-        return SupplyResource::make($supply);
+        return SupplyResource::make($supply)
+            ->additional(['message' => 'Поставка успешно создана и проведена.']);
     }
 }

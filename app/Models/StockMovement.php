@@ -71,7 +71,7 @@ class StockMovement extends Model
      */
     public function doc(): MorphTo
     {
-        return $this->morphTo(__FUNCTION__, 'doc_type', 'doc_id');
+        return $this->morphTo();
     }
 
     /**

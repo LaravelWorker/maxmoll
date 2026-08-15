@@ -24,46 +24,43 @@ class CustomerController extends Controller
      */
     public function index(CustomerIndexRequest $request): AnonymousResourceCollection
     {
-        // Инициализируем базовый запрос к модели клиентов
         $query = Customer::query();
 
-        // Если задано фильтр по имени — добавляем условие LIKE
+        // Фильтр по имени
         if ($request->filled('name')) {
-            // Используем поиск подстроки по полю `name`
-            $query->where('name', 'like', "%$request->input('name')%");
+            $name = $request->input('name');
+            $query->where('name', 'like', "%{$name}%");
         }
 
-        // Если задан фильтр по телефону — добавляем условие LIKE
+        // Фильтр по телефону
         if ($request->filled('phone')) {
-            $query->where('phone', 'like', "%$request->input('phone')%");
+            $phone = $request->input('phone');
+            $query->where('phone', 'like', "%{$phone}%");
         }
 
-        // Если задан фильтр по email — добавляем условие LIKE
+        // Фильтр по email
         if ($request->filled('email')) {
-            $query->where('email', 'like', "%$request->input('email')%");
+            $email = $request->input('email');
+            $query->where('email', 'like', "%{$email}%");
         }
 
-        // Если задан общий параметр `search` — выполняем поиск по нескольким полям
+        // Общий поиск по всем полям (резервный)
         if ($request->filled('search')) {
-            // Сохраняем значение поиска в переменную для использования в замыкании
             $search = $request->input('search');
-
-            // Группируем OR-условия в замыкании, чтобы корректно сочетать с другими фильтрами
             $query->where(function ($q) use ($search) {
-                // Поиск совпадений в `name`, `phone` или `email`
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('phone', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
-        // Получаем параметр пагинации `per_page`, по умолчанию 15
+        // Устанавливаем количество элементов на страницу на основе запроса клиента
         $perPage = $request->input('per_page', 15);
 
-        // Выполняем сортировку по убыванию id и пагинацию результатов
+        // Выполняем сортировку по убыванию id и пагинацию
         $customers = $query->orderByDesc('id')->paginate($perPage);
 
-        // Возвращаем коллекцию ресурсов клиентов (форматированный API-ответ)
+        // Возвращаем коллекцию ресурсов клиентов
         return CustomerResource::collection($customers);
     }
 
@@ -81,7 +78,7 @@ class CustomerController extends Controller
         // Создаём клиента на основе валидированных данных
         $customer = Customer::create($request->validated());
 
-        // Возвращаем ресурс клиента для единообразного API-ответа
+        // Подготавливаем ресурс для ответа API
         return CustomerResource::make($customer);
     }
 
@@ -97,10 +94,10 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer): CustomerResource
     {
-        // Обновляем модель клиента валидированными данными из запроса
+        // Вносим обновления в существующую запись клиента
         $customer->update($request->validated());
 
-        // Возвращаем ресурс с обновлёнными данными
+        // Возвращаем обновлённый ресурс клиента
         return CustomerResource::make($customer);
     }
 }

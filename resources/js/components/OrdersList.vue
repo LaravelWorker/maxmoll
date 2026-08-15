@@ -2,9 +2,68 @@
   <div>
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h4 class="m-0">Список заказов</h4>
-      <button class="btn btn-primary" @click="openCreateModal">
+      <button class="btn btn-primary btn-sm" @click="openCreateModal">
         + Создать новый заказ
       </button>
+    </div>
+
+    <!-- Блок фильтров и поиска -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">Покупатель</label>
+            <input 
+              type="text" 
+              v-model="filters.customer_search" 
+              class="form-control form-control-sm" 
+              placeholder="Поиск по покупателю..." 
+              @input="debouncedFetchOrders"
+            />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">Склад</label>
+            <input 
+              type="text" 
+              v-model="filters.warehouse_search" 
+              class="form-control form-control-sm" 
+              placeholder="Поиск по складу..." 
+              @input="debouncedFetchOrders"
+            />
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-bold">Статус</label>
+            <select v-model="filters.status" class="form-select form-select-sm" @change="fetchOrders(1)">
+              <option value="">Все статусы</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="canceled">Canceled</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-bold">Показывать по</label>
+            <select 
+              v-model="perPage" 
+              class="form-select form-select-sm" 
+              @change="changePerPage"
+            >
+              <option :value="15">15</option>
+              <option :value="25">25</option>
+              <option :value="50">50</option>
+              <option :value="100">100</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <button class="btn btn-sm btn-outline-secondary w-100" @click="resetFilters">
+              Сбросить
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Таблица заказов -->
@@ -16,7 +75,7 @@
               <th># ID</th>
               <th>Покупатель</th>
               <th>Склад</th>
-              <th>Позиций</th>
+              <th>Состав заказа</th>
               <th>Статус</th>
               <th>Дата создания</th>
               <th class="text-end">Действия</th>
@@ -33,7 +92,20 @@
               <td><strong>#{{ order.id }}</strong></td>
               <td>{{ order.customer?.name || '—' }}</td>
               <td>{{ order.warehouse?.name || '—' }}</td>
-              <td>{{ order.items?.length || 0 }}</td>
+              <td>
+                <!-- Полный состав заказа -->
+                <div v-if="order.items && order.items.length" class="py-1">
+                  <div 
+                    v-for="item in order.items" 
+                    :key="item.id || item.product_id" 
+                    class="small text-nowrap"
+                  >
+                    • {{ `${item.product_name}` }} 
+                    <span class="fw-bold text-secondary">({{ item.count }} шт.)</span>
+                  </div>
+                </div>
+                <span v-else class="text-muted small">—</span>
+              </td>
               <td>
                 <span :class="getStatusBadgeClass(order.status)" class="badge">
                   {{ order.status }}
@@ -41,8 +113,12 @@
               </td>
               <td>{{ order.created_at }}</td>
               <td class="text-end">
-                <button v-if="order.status === 'active'" class="btn btn-sm btn-outline-primary me-1" @click="openEditModal(order)">
+                <button v-if="order.status == 'active'" class="btn btn-sm btn-outline-primary me-1" @click="openEditModal(order)">
                   ✏️ Редактировать
+                </button>
+
+                <button v-if="order.status == 'canceled'" class="btn btn-sm btn-outline-success me-1" @click="restoreOrder(order)">
+                  🔄 Возобновить
                 </button>
               </td>
             </tr>
@@ -51,10 +127,9 @@
       </div>
     </div>
 
-    <!-- Настраиваемая Пагинация -->
+    <!-- Пагинация -->
     <div class="d-flex justify-content-between align-items-center mt-3" v-if="pagination.total > 0">
       <div class="text-muted small">
-        Показано {{ pagination.from }}–{{ pagination.to }} из {{ pagination.total }} заказов
       </div>
       <ul class="pagination pagination-sm m-0">
         <li class="page-item" :class="{ disabled: !pagination.prev }">
@@ -80,7 +155,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import OrderFormModal from './OrderFormModal.vue';
 
@@ -88,6 +163,13 @@ const orders = ref([]);
 const loading = ref(false);
 const showModal = ref(false);
 const selectedOrder = ref(null);
+const perPage = ref(15);
+
+const filters = reactive({
+  customer_search: '',
+  warehouse_search: '',
+  status: '',
+});
 
 const pagination = ref({
   currentPage: 1,
@@ -99,10 +181,26 @@ const pagination = ref({
   next: null,
 });
 
+const restoreOrder = async (order) => {
+  if (!confirm(`Вы действительно хотите возобновить заказ #${order.id}?`)) return;
+  
+  try {
+    await axios.post(`/api/orders/${order.id}/restore`);
+    fetchOrders(pagination.value.currentPage);
+  } catch (err) {
+    alert(err.response?.data?.message || 'Ошибка возобновления заказа');
+  }
+};
+
 const fetchOrders = async (page = 1) => {
   loading.value = true;
   try {
-    const res = await axios.get(`/api/orders?page=${page}&per_page=10`);
+    const params = {
+      page,
+      per_page: perPage.value,
+      ...filters,
+    };
+    const res = await axios.get('/api/orders', { params });
     orders.value = res.data.data;
     pagination.value = {
       currentPage: res.data.meta.current_page,
@@ -119,6 +217,26 @@ const fetchOrders = async (page = 1) => {
   } finally {
     loading.value = false;
   }
+};
+
+let searchTimeout = null;
+const debouncedFetchOrders = () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    fetchOrders(1);
+  }, 300);
+};
+
+const changePerPage = () => {
+  fetchOrders(1);
+};
+
+const resetFilters = () => {
+  filters.customer_search = '';
+  filters.warehouse_search = '';
+  filters.status = '';
+  perPage.value = 15;
+  fetchOrders(1);
 };
 
 const getStatusBadgeClass = (status) => {

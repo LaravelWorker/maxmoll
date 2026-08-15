@@ -37,7 +37,17 @@ class StockMovementController extends Controller
 
         // Фильтрация по типу документа-источника (например, order, supply, transfer)
         if ($request->filled('doc_type')) {
-            $query->where('doc_type', $request->input('doc_type'));
+            $docTypeMap = [
+                'order'    => \App\Models\Order::class,
+                'supply'   => \App\Models\Supply::class,
+                'transfer' => \App\Models\Transfer::class,
+            ];
+
+            $input = $request->input('doc_type');
+
+            if (isset($docTypeMap[$input])) {
+                $query->where('doc_type', $docTypeMap[$input]);
+            }
         }
 
         // Фильтрация по начальной дате периода создания записи

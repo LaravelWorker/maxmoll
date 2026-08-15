@@ -19,7 +19,6 @@ class OrderIndexRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // В соответствии с требованиями проекта авторизация не требуется, разрешаем доступ.
         return true;
     }
 

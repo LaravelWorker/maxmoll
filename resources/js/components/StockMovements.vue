@@ -13,25 +13,42 @@
               <option v-for="w in warehouses" :key="w.id" :value="w.id">{{ w.name }}</option>
             </select>
           </div>
+
           <div class="col-md-3">
-            <label class="form-label small fw-bold">Товар</label>
-            <select v-model="filters.product_id" class="form-select form-select-sm" @change="fetchMovements(1)">
-              <option value="">Все товары</option>
-              <option v-for="p in products" :key="p.id" :value="p.id">{{ p.name }}</option>
-            </select>
+            <label class="form-label small fw-bold">Поиск товара</label>
+            <input 
+              type="text" 
+              v-model="filters.search" 
+              class="form-control form-control-sm" 
+              placeholder="Введите название товара..." 
+              @input="debouncedFetchMovements"
+            />
           </div>
-          <div class="col-md-3">
-            <label class="form-label small fw-bold">Тип документа</label>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-bold">Тип источника</label>
             <select v-model="filters.doc_type" class="form-select form-select-sm" @change="fetchMovements(1)">
               <option value="">Все типы</option>
-              <option value="order">Order (Заказ)</option>
-              <option value="supply">Supply (Поставка)</option>
-              <option value="transfer">Transfer (Перемещение)</option>
+              <option value="order">Заказ</option>
+              <option value="supply">Поставка</option>
+              <option value="transfer">Перемещение</option>
             </select>
           </div>
-          <div class="col-md-3 d-flex align-items-end">
+
+          <div class="col-md-2">
+            <label class="form-label small fw-bold">Показывать по</label>
+            <select v-model="perPage" class="form-select form-select-sm" @change="changePerPage">
+              <option :value="10">10</option>
+              <option :value="15">15</option>
+              <option :value="25">25</option>
+              <option :value="50">50</option>
+              <option :value="100">100</option>
+            </select>
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
             <button class="btn btn-sm btn-outline-secondary w-100" @click="resetFilters">
-              Сбросить фильтры
+              Сбросить
             </button>
           </div>
         </div>
@@ -49,7 +66,7 @@
               <th>Склад</th>
               <th>Товар</th>
               <th>Количество (изменение)</th>
-              <th>Документ-источник</th>
+              <th>Источник</th>
             </tr>
           </thead>
           <tbody>
@@ -71,7 +88,7 @@
               </td>
               <td>
                 <span class="badge bg-light text-dark border">
-                  {{ m.doc_type }} #{{ m.doc_id }}
+                  {{ getDocumentLabel(m.doc_type) }}
                 </span>
               </td>
             </tr>
@@ -83,7 +100,6 @@
     <!-- Пагинация -->
     <div class="d-flex justify-content-between align-items-center mt-3" v-if="pagination.total > 0">
       <div class="text-muted small">
-        Записей: {{ pagination.total }}
       </div>
       <ul class="pagination pagination-sm m-0">
         <li class="page-item" :class="{ disabled: pagination.currentPage === 1 }">
@@ -106,12 +122,12 @@ import axios from 'axios';
 
 const movements = ref([]);
 const warehouses = ref([]);
-const products = ref([]);
 const loading = ref(false);
+const perPage = ref(15);
 
 const filters = reactive({
   warehouse_id: '',
-  product_id: '',
+  search: '',
   doc_type: '',
 });
 
@@ -119,15 +135,32 @@ const pagination = ref({
   currentPage: 1,
   lastPage: 1,
   total: 0,
+  from: 0,
+  to: 0,
 });
 
-const loadDictionaries = async () => {
-  const [whRes, prodRes] = await Promise.all([
-    axios.get('/api/warehouses'),
-    axios.get('/api/products'),
-  ]);
-  warehouses.value = whRes.data.data;
-  products.value = prodRes.data.data;
+const getDocumentLabel = (docType) => {
+  const typeName = docType ? docType.split('\\').pop() : '';
+
+  switch (typeName.toLowerCase()) {
+    case 'order':
+      return 'Заказ';
+    case 'supply':
+      return 'Поставка';
+    case 'transfer':
+      return 'Перемещение';
+    default:
+      return typeName || 'Документ';
+  }
+};
+
+const loadWarehouses = async () => {
+  try {
+    const res = await axios.get('/api/warehouses');
+    warehouses.value = res.data.data;
+  } catch (e) {
+    console.error('Ошибка загрузки складов');
+  }
 };
 
 const fetchMovements = async (page = 1) => {
@@ -135,7 +168,7 @@ const fetchMovements = async (page = 1) => {
   try {
     const params = {
       page,
-      per_page: 15,
+      per_page: perPage.value,
       ...filters,
     };
     const res = await axios.get('/api/stock-movements', { params });
@@ -144,6 +177,8 @@ const fetchMovements = async (page = 1) => {
       currentPage: res.data.meta.current_page,
       lastPage: res.data.meta.last_page,
       total: res.data.meta.total,
+      from: res.data.meta.from,
+      to: res.data.meta.to,
     };
   } catch (err) {
     alert('Ошибка загрузки истории движений');
@@ -152,15 +187,28 @@ const fetchMovements = async (page = 1) => {
   }
 };
 
+const changePerPage = () => {
+  fetchMovements(1);
+};
+
+let searchTimeout = null;
+const debouncedFetchMovements = () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    fetchMovements(1);
+  }, 300);
+};
+
 const resetFilters = () => {
   filters.warehouse_id = '';
-  filters.product_id = '';
+  filters.search = '';
   filters.doc_type = '';
+  perPage.value = 15;
   fetchMovements(1);
 };
 
 onMounted(() => {
-  loadDictionaries();
+  loadWarehouses();
   fetchMovements(1);
 });
 </script>

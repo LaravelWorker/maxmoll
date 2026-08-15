@@ -28,7 +28,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             
             // Количество единиц выбранного товара, входящего в состав заказа
-            $table->integer('count');
+            $table->unsignedInteger('count');
         });
     }
 

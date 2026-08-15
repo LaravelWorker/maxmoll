@@ -17,7 +17,6 @@ class StoreCustomerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Создание покупателей доступно всем, дополнительная авторизация не требуется
         return true;
     }
 
@@ -37,6 +36,15 @@ class StoreCustomerRequest extends FormRequest
             
             // Электронная почта: необязательное поле, проверка на валидный формат email, ограничение длины
             'email' => ['nullable', 'email', 'max:255'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Имя покупателя обязательно для заполнения.',
+            'email.email'   => 'Введите корректный адрес электронной почты.',
+            'email.unique'  => 'Покупатель с таким email уже существует.',
         ];
     }
 }

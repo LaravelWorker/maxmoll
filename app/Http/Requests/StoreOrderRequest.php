@@ -55,6 +55,9 @@ class StoreOrderRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'customer_id.required' => 'Не указан покупатель.',
+            'warehouse_id.required' => 'Не указан склад.',
+            'items.required' => 'Заказ должен содержать хотя бы одну позицию.',
             // Переопределение стандартных сообщений для ошибок проверки внешних ключей
             'customer_id.exists'         => 'Указанный покупатель не существует.',
             'warehouse_id.exists'        => 'Указанный склад не существует.',

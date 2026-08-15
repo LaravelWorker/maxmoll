@@ -40,4 +40,13 @@ class UpdateCustomerRequest extends FormRequest
             'email' => ['nullable', 'email', 'max:255'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Имя покупателя обязательно для заполнения.',
+            'email.email'   => 'Введите корректный адрес электронной почты.',
+            'email.unique'  => 'Покупатель с таким email уже существует.',
+        ];
+    }
 }

@@ -47,4 +47,16 @@ class StoreTransferRequest extends FormRequest
             'items.*.count'      => ['required', 'integer', 'min:1'],
         ];
     }
+
+    /**
+     * Кастомные сообщения об ошибках (опционально, для удобства UI).
+     */
+    public function messages(): array
+    {
+        return [
+            'from_warehouse_id.different' => 'Склад-отправитель и склад-получатель не могут совпадать.',
+            'items.required'              => 'Необходимо указать хотя бы один товар для перемещения.',
+            'items.*.count.min'           => 'Количество товара должно быть больше нуля.',
+        ];
+    }
 }
