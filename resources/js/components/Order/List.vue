@@ -113,9 +113,14 @@
               </td>
               <td>{{ order.created_at }}</td>
               <td class="text-end">
-                <button v-if="order.status == 'active'" class="btn btn-sm btn-outline-primary me-1" @click="openEditModal(order)">
-                  ✏️ Редактировать
-                </button>
+                <div v-if="order.status == 'active'" class="btn-group">
+                  <button class="btn btn-sm btn-outline-primary me-1" @click="openEditModal(order)">
+                    Редактировать
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger me-1" @click="cancelOrder(order)">
+                    Удалить
+                  </button>
+                </div>
 
                 <button v-if="order.status == 'canceled'" class="btn btn-sm btn-outline-success me-1" @click="restoreOrder(order)">
                   🔄 Возобновить
@@ -157,7 +162,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
-import OrderFormModal from './OrderFormModal.vue';
+import OrderFormModal from './FormModal.vue';
 
 const orders = ref([]);
 const loading = ref(false);
@@ -256,6 +261,17 @@ const openCreateModal = () => {
 const openEditModal = (order) => {
   selectedOrder.value = order;
   showModal.value = true;
+};
+
+const cancelOrder = async (order) => {
+  if (!confirm(`Вы действительно хотите удалить заказ #${order.id}?`)) return;
+
+  try {
+    await axios.post(`/api/orders/${order.id}/destroy`);
+    fetchOrders(pagination.value.currentPage);
+  } catch (err) {
+    alert(err.response?.data?.message || 'Ошибка удаления заказа');
+  }
 };
 
 const onOrderSaved = () => {

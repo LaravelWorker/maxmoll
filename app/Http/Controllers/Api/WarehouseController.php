@@ -7,9 +7,14 @@ use App\Http\Requests\StoreTransferRequest;
 use App\Http\Resources\TransferResource;
 use App\Http\Resources\WarehouseResource;
 use App\Models\Warehouse;
+use App\Models\Product;
+use App\Models\Stock;
 use App\Services\TransferService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\StockIndexRequest;
+use App\Http\Resources\StockResource;
+use App\Http\Resources\ProductResource;
 
 class WarehouseController extends Controller
 {
@@ -67,21 +72,21 @@ class WarehouseController extends Controller
     /**
      * Просмотр остатков товаров с фильтрацией и пагинацией.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param StockIndexRequest $request
+     * @return AnonymousResourceCollection
      */
-    public function stocks(\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse
+    public function stocks(StockIndexRequest $request): AnonymousResourceCollection
     {
-        $query = \App\Models\Stock::with(['product', 'warehouse']);
+        $query = Stock::query()->with(['product', 'warehouse']);
 
         // Фильтр по складу
         if ($request->filled('warehouse_id')) {
-            $query->where('warehouse_id', $request->warehouse_id);
+            $query->where('warehouse_id', $request->input('warehouse_id'));
         }
 
         // Поиск по названию товара
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = $request->input('search');
             $query->whereHas('product', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");
             });
@@ -90,17 +95,20 @@ class WarehouseController extends Controller
         // Настраиваемая пагинация с фолбэком на 15 элементов
         $perPage = (int) $request->input('per_page', 15);
 
-        return response()->json($query->paginate($perPage));
+        $stocks = $query->paginate($perPage);
+
+        return StockResource::collection($stocks);
     }
 
     /**
      * Получение списка товаров для выпадающих списков в UI.
      *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @return AnonymousResourceCollection
      */
-    public function products(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function products(): AnonymousResourceCollection
     {
-        $products = \App\Models\Product::all();
-        return \App\Http\Resources\ProductResource::collection($products);
+        $products = Product::all();
+
+        return ProductResource::collection($products);
     }
 }

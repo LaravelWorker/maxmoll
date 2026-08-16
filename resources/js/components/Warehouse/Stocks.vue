@@ -4,12 +4,6 @@
       <h4 class="m-0">Остатки товаров на складах</h4>
       <div class="d-flex gap-2">
         <button 
-          class="btn btn-sm btn-success"
-          @click="openSupplyModal"
-        >
-          + Новая поставка
-        </button>
-        <button 
           class="btn btn-sm btn-primary"
           @click="openTransferModal"
         >
@@ -462,12 +456,6 @@ const submitTransfer = async () => {
   } finally {
     loading.value = false
   }
-}
-
-const openSupplyModal = () => {
-  supplyForm.warehouse_id = ''
-  supplyForm.items = [{ product_id: '', count: 1 }]
-  isSupplyModalOpen.value = true
 }
 
 const addSupplyItem = () => {

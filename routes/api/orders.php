@@ -17,4 +17,5 @@ Route::delete('/{order}', [OrderController::class, 'destroy']);
 // Экшены смены статуса
 Route::post('/{order}/complete', [OrderController::class, 'complete']);
 Route::post('/{order}/cancel', [OrderController::class, 'cancel']);
+Route::post('/{order}/destroy', [OrderController::class, 'destroy']);
 Route::post('/{order}/restore', [OrderController::class, 'restore']);

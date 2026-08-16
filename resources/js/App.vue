@@ -24,7 +24,7 @@
           :class="{ active: activeTab === 'customers' }"
           @click="activeTab = 'customers'"
         >
-          👥 Покупатели
+          👥 Клиенты
         </button>
       </li>
       <li class="nav-item">
@@ -34,6 +34,14 @@
           @click="activeTab = 'warehouses'"
         >
           🎯 Склады
+        </button>
+      </li>
+      <li class="nav-item">
+        <button 
+          class="nav-link" 
+          :class="{ active: activeTab === 'supplies' }"
+          @click="activeTab = 'supplies'">
+          ➕ Поставки
         </button>
       </li>
       <li class="nav-item">
@@ -53,16 +61,18 @@
       <StockMovements v-if="activeTab === 'movements'" />
       <WarehouseStocks v-if="activeTab === 'warehouses'" />
       <CustomersList v-if="activeTab === 'customers'" />
+      <SuppliesList v-if="activeTab === 'supplies'" />
     </main>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import OrdersList from './components/OrdersList.vue';
-import CustomersList from './components/CustomersList.vue';
-import StockMovements from './components/StockMovements.vue';
-import WarehouseStocks from './components/WarehouseStocks.vue';
+import OrdersList from './components/Order/List.vue';
+import CustomersList from './components/Customer/List.vue';
+import StockMovements from './components/Stock/Movements.vue';
+import WarehouseStocks from './components/Warehouse/Stocks.vue';
+import SuppliesList from './components/Supplies/List.vue'; 
 
 const activeTab = ref('orders');
 </script>

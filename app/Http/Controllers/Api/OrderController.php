@@ -82,7 +82,6 @@ class OrderController extends Controller
             // Возвращаем созданный заказ как JSON-ресурс
             return OrderResource::make($order);
         } catch (\Exception $e) {
-            // В случае ошибки формируем понятный JSON-ответ клиенту
             return response()->json([
                 'message' => $e->getMessage(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -109,7 +108,6 @@ class OrderController extends Controller
             // Возвращаем обновлённый заказ
             return OrderResource::make($order);
         } catch (\Exception $e) {
-            // Возвращаем сообщение об ошибке в одном формате
             return response()->json([
                 'message' => $e->getMessage(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -137,9 +135,7 @@ class OrderController extends Controller
 
             // Возвращаем завершённый заказ в API-формате
             return OrderResource::make($order);
-
         } catch (\Exception $e) {
-            // При ошибке (нехватка остатков, неверный статус) возвращаем HTTP 422
             return response()->json([
                 'message' => $e->getMessage(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);

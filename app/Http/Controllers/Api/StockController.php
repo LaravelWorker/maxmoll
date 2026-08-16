@@ -3,29 +3,28 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StockIndexRequest;
+use App\Http\Resources\StockResource;
 use App\Models\Stock;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class StockController extends Controller
 {
     /**
      * Получить список остатков товаров по складам с пагинацией и поиском.
      *
-     * @param Request $request
-     * @return JsonResponse
+     * @param StockIndexRequest $request
+     * @return AnonymousResourceCollection
      */
-    public function index(Request $request): JsonResponse
+    public function index(StockIndexRequest $request): AnonymousResourceCollection
     {
         $query = Stock::query()->with(['warehouse', 'product']);
 
         // Регистронезависимый поиск по названию склада
         if ($request->filled('warehouse')) {
-            Log::info('Warehouse filter: ' . $request->input('warehouse'));
-            $warehouseName = mb_strtolower(trim($request->input('warehouse')));
+            $warehouseName = $request->input('warehouse');
             $query->whereHas('warehouse', function ($q) use ($warehouseName) {
-                $q->whereRaw('LOWER(name) LIKE ?', ["%{$warehouseName}%"]);
+                $q->where('name', 'like', "%{$warehouseName}%");
             });
         }
 
@@ -33,21 +32,14 @@ class StockController extends Controller
         if ($request->filled('product')) {
             $productName = mb_strtolower(trim($request->input('product')));
             $query->whereHas('product', function ($q) use ($productName) {
-                $q->whereRaw('LOWER(name) LIKE ?', ["%{$productName}%"]);
+                $q->where('name', 'like', "%{$productName}%");
             });
         }
 
-        // Строгая фильтрация по ID склада (если передается из других модулей)
-        if ($request->filled('warehouse_id')) {
-            $query->where('warehouse_id', $request->input('warehouse_id'));
-        }
-
-        // Валидация пагинации (ограничение от 1 до 100 элементов)
         $perPage = (int) $request->input('per_page', 15);
-        $perPage = max(1, min(100, $perPage));
 
         $stocks = $query->orderBy('warehouse_id')->paginate($perPage);
 
-        return response()->json($stocks);
+        return StockResource::collection($stocks);
     }
 }

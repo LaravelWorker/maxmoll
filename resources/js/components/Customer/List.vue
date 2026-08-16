@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h4 class="m-0">Список покупателей</h4>
       <button class="btn btn-primary btn-sm" @click="openCreateModal">
-        + Новый покупатель
+        ➕ Добавить клиента
       </button>
     </div>
 
@@ -87,7 +87,7 @@
               <td colspan="6" class="text-center py-4">Загрузка покупателей...</td>
             </tr>
             <tr v-else-if="customers.length === 0">
-              <td colspan="6" class="text-center py-4 text-muted">Покупатели не найдены</td>
+              <td colspan="6" class="text-center py-4 text-muted">Клиенты не найдены</td>
             </tr>
             <tr v-for="c in customers" :key="c.id">
               <td><strong>#{{ c.id }}</strong></td>
@@ -136,7 +136,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
-import CustomerFormModal from './CustomerFormModal.vue';
+import CustomerFormModal from './FormModal.vue';
 
 const customers = ref([]);
 const loading = ref(false);

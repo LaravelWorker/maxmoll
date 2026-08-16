@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Consts\OrderStatus;
 use App\Models\Order;
 use App\Models\Stock;
-use App\Models\StockMovement;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
 class OrderService
@@ -103,8 +103,9 @@ class OrderService
 
             $availableStock = $stock ? $stock->stock : 0;
 
+            // Проверяем, достаточно ли товара на складе
             if ($availableStock < $requestedCount) {
-                throw new \Exception("Недостаточно товара Доступно: {$availableStock}, требуется: {$requestedCount}.");
+                throw new \Exception("Недостаточно товара " . Product::find($stock->product_id ?? $item['product_id'])->name . ". Доступно: {$availableStock}, требуется: {$requestedCount}.");
             }
         }
     }
