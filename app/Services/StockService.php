@@ -21,23 +21,28 @@ class StockService
      */
     public function decrementStock(int $warehouseId, int $productId, int $quantity, Model $document): void
     {
-        // 1. Блокируем и проверяем физическую запись остатка
-        $stock = Stock::where('warehouse_id', $warehouseId)
-            ->where('product_id', $productId)
-            ->lockForUpdate()
-            ->first();
+        // Оборачиваем операцию в транзакцию: только внутри неё пессимистическая блокировка
+        // lockForUpdate() удерживается до фиксации изменений. При вызове из OrderService/TransferService,
+        // которые уже открыли транзакцию, это создаёт вложенный savepoint и не нарушает целостность.
+        DB::transaction(function () use ($warehouseId, $productId, $quantity, $document) {
+            // 1. Блокируем и проверяем физическую запись остатка
+            $stock = Stock::where('warehouse_id', $warehouseId)
+                ->where('product_id', $productId)
+                ->lockForUpdate()
+                ->first();
 
-        $available = $stock ? $stock->stock : 0;
+            $available = $stock ? $stock->stock : 0;
 
-        if (!$stock || $available < $quantity) {
-            throw new \Exception("Недостаточно товара (ID: {$productId}) на складе #{$warehouseId}. В наличии: {$available}, требуется: {$quantity}");
-        }
+            if (!$stock || $available < $quantity) {
+                throw new \Exception("Недостаточно товара (ID: {$productId}) на складе #{$warehouseId}. В наличии: {$available}, требуется: {$quantity}");
+            }
 
-        // 2. Атомарное списание на уровне базы данных (выполняет UPDATE stocks SET stock = stock - N)
-        $stock->decrement('stock', $quantity);
+            // 2. Атомарное списание на уровне базы данных (выполняет UPDATE stocks SET stock = stock - N)
+            $stock->decrement('stock', $quantity);
 
-        // 3. Фиксация проводки в журнале движений
-        $this->recordMovement($warehouseId, $productId, -$quantity, $document);
+            // 3. Фиксация проводки в журнале движений
+            $this->recordMovement($warehouseId, $productId, -$quantity, $document);
+        });
     }
 
     /**
@@ -71,9 +76,7 @@ class StockService
             $stock->increment('stock', $quantity);
 
             // Фиксируем запись в истории движений
-            if ($document) {
-                $this->recordMovement($warehouseId, $productId, $quantity, $document);
-            }
+            $this->recordMovement($warehouseId, $productId, $quantity, $document);
         });
     }
 
