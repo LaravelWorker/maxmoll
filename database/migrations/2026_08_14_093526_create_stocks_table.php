@@ -39,8 +39,12 @@ return new class extends Migration
             $table->primary(['warehouse_id', 'product_id']);
         });
 
-        // Блокирует попытки записать отрицательный остаток на уровне СУБД
-        DB::statement('ALTER TABLE stocks ADD CONSTRAINT check_stock_positive CHECK (stock >= 0)');
+        // Блокирует попытки записать отрицательный остаток на уровне СУБД.
+        // Синтаксис ALTER TABLE ... ADD CONSTRAINT ... CHECK поддерживается MySQL/PostgreSQL,
+        // но не sqlite (используется в тестах), поэтому применяем его только для совместимых драйверов.
+        if (in_array(DB::getDriverName(), ['mysql', 'mariadb', 'pgsql'], true)) {
+            DB::statement('ALTER TABLE stocks ADD CONSTRAINT check_stock_positive CHECK (stock >= 0)');
+        }
     }
 
     /**

@@ -187,33 +187,26 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import OrderFormModal from './FormModal.vue';
 import Pagination from '../Common/Pagination.vue';
 import OrderStatusBadge from '../Common/OrderStatusBadge.vue';
 import { useOrderStatus } from '../Composables/useOrderStatus';
+import { usePagination } from '../Composables/usePagination';
 
 const { statusLabels } = useOrderStatus();
+const { perPage, pagination, setMeta, debounce } = usePagination(15);
 
 const orders = ref([]);
 const loading = ref(false);
 const showModal = ref(false);
 const selectedOrder = ref(null);
-const perPage = ref(15);
 
 const filters = reactive({
   customer_search: '',
   warehouse_search: '',
   status: '',
-});
-
-const pagination = ref({
-  current_page: 1,
-  last_page: 1,
-  total: 0,
-  from: 0,
-  to: 0,
 });
 
  const fetchOrders = async (page = 1) => {
@@ -227,7 +220,7 @@ const pagination = ref({
 
     const response = await axios.get('/api/orders', { params });
     orders.value = response.data.data;
-    pagination.value = response.data.meta;
+    setMeta(response.data.meta);
   } catch (err) {
     console.error('Ошибка при загрузке заказов:', err);
     alert('Ошибка при загрузке заказов');
@@ -236,18 +229,13 @@ const pagination = ref({
   }
 };
 
-// Автоматический watcher для всех изменений в фильтрах и perPage
-let searchTimeout = null;
-watch(
-  [filters, perPage],
-  () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      fetchOrders(1);
-    }, 300);
-  },
-  { deep: true }
-);
+// Поиск с задержкой (debounce) для текстовых фильтров
+const debouncedFetchOrders = debounce(() => fetchOrders(1));
+
+// Смена количества элементов на странице сбрасывает выборку на первую страницу
+const changePerPage = () => {
+  fetchOrders(1);
+};
 
 const resetFilters = () => {
   filters.customer_search = '';

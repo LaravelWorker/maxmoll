@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h4 class="m-0">Остатки товаров на складах</h4>
       <div class="d-flex gap-2">
-        <button 
+        <button
           class="btn btn-sm btn-primary"
           @click="openTransferModal"
         >
@@ -13,9 +13,9 @@
     </div>
 
     <!-- Глобальное плавающее уведомление поверх всех окон (в правом верхнем углу) -->
-    <div 
-      v-if="notification" 
-      class="position-fixed top-0 end-0 p-3" 
+    <div
+      v-if="notification"
+      class="position-fixed top-0 end-0 p-3"
       style="z-index: 1080;"
     >
       <div :class="['alert shadow-lg mb-0', notification.type === 'success' ? 'alert-success' : 'alert-danger']" role="alert">
@@ -29,9 +29,9 @@
         <div class="row g-3 align-items-end">
           <div class="col-md-3">
             <label class="form-label small fw-bold">Склад</label>
-            <select 
-              v-model="filters.warehouse_id" 
-              class="form-select form-select-sm" 
+            <select
+              v-model="filters.warehouse_id"
+              class="form-select form-select-sm"
               @change="fetchStocks(1)"
             >
               <option value="">Все склады</option>
@@ -42,11 +42,11 @@
           </div>
           <div class="col-md-5">
             <label class="form-label small fw-bold">Поиск товара</label>
-            <input 
-              type="text" 
-              v-model="filters.search" 
+            <input
+              type="text"
+              v-model="filters.search"
               @input="debouncedFetchStocks"
-              placeholder="Введите название товара..." 
+              placeholder="Введите название товара..."
               class="form-control form-control-sm"
             />
           </div>
@@ -112,13 +112,13 @@
             <h5 class="modal-title">Новое межскладское перемещение</h5>
             <button type="button" class="btn-close" @click="isModalOpen = false"></button>
           </div>
-          
+
           <form @submit.prevent="submitTransfer">
             <div class="modal-body">
               <div class="mb-3">
                 <label class="form-label small fw-bold">Склад-отправитель</label>
-                <select 
-                  v-model="transferForm.from_warehouse_id" 
+                <select
+                  v-model="transferForm.from_warehouse_id"
                   required
                   class="form-select form-select-sm"
                 >
@@ -129,8 +129,8 @@
 
               <div class="mb-3">
                 <label class="form-label small fw-bold">Склад-получатель</label>
-                <select 
-                  v-model="transferForm.to_warehouse_id" 
+                <select
+                  v-model="transferForm.to_warehouse_id"
                   required
                   class="form-select form-select-sm"
                 >
@@ -146,7 +146,7 @@
               <div class="mb-3">
                 <label class="form-label small fw-bold">Позиции товаров</label>
                 <div v-for="(item, index) in transferForm.items" :key="index" class="input-group input-group-sm mb-2">
-                  <select 
+                  <select
                     v-model="item.product_id"
                     required
                     class="form-select"
@@ -154,8 +154,8 @@
                     <option value="">Выберите товар</option>
                     <option v-for="p in products" :key="p.id" :value="p.id">{{ p.name }}</option>
                   </select>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     min="1"
                     v-model.number="item.count"
                     required
@@ -163,8 +163,8 @@
                     style="max-width: 90px;"
                     placeholder="Кол-во"
                   />
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     @click="removeTransferItem(index)"
                     v-if="transferForm.items.length > 1"
                     class="btn btn-outline-danger"
@@ -172,8 +172,8 @@
                     ✕
                   </button>
                 </div>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   @click="addTransferItem"
                   class="btn btn-sm btn-outline-secondary mt-1 w-100"
                 >
@@ -183,102 +183,19 @@
             </div>
 
             <div class="modal-footer">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 @click="isModalOpen = false"
                 class="btn btn-sm btn-secondary"
               >
                 Отмена
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 :disabled="loading"
                 class="btn btn-sm btn-primary"
               >
                 {{ loading ? 'Проведение...' : 'Провести перемещение' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Модальное окно создания поставки -->
-    <div v-if="isSupplyModalOpen" class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-      <div class="modal-dialog" style="margin-top: 100px;">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Оформление новой поставки</h5>
-            <button type="button" class="btn-close" @click="isSupplyModalOpen = false"></button>
-          </div>
-          
-          <form @submit.prevent="submitSupply">
-            <div class="modal-body">
-              <div class="mb-3">
-                <label class="form-label small fw-bold">Склад назначения</label>
-                <select 
-                  v-model="supplyForm.warehouse_id" 
-                  required
-                  class="form-select form-select-sm"
-                >
-                  <option value="">Выберите склад</option>
-                  <option v-for="w in warehouses" :key="w.id" :value="w.id">{{ w.name }}</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label small fw-bold">Позиции товаров</label>
-                <div v-for="(item, index) in supplyForm.items" :key="index" class="input-group input-group-sm mb-2">
-                  <select 
-                    v-model="item.product_id"
-                    required
-                    class="form-select"
-                  >
-                    <option value="">Выберите товар</option>
-                    <option v-for="p in products" :key="p.id" :value="p.id">{{ p.name }}</option>
-                  </select>
-                  <input 
-                    type="number" 
-                    min="1"
-                    v-model.number="item.count"
-                    required
-                    class="form-control"
-                    style="max-width: 90px;"
-                    placeholder="Кол-во"
-                  />
-                  <button 
-                    type="button" 
-                    @click="removeSupplyItem(index)"
-                    v-if="supplyForm.items.length > 1"
-                    class="btn btn-outline-danger"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <button 
-                  type="button" 
-                  @click="addSupplyItem"
-                  class="btn btn-sm btn-outline-secondary mt-1 w-100"
-                >
-                  + Добавить еще товар
-                </button>
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button 
-                type="button" 
-                @click="isSupplyModalOpen = false"
-                class="btn btn-sm btn-secondary"
-              >
-                Отмена
-              </button>
-              <button 
-                type="submit" 
-                :disabled="loading"
-                class="btn btn-sm btn-success"
-              >
-                {{ loading ? 'Сохранение...' : 'Создать поставку' }}
               </button>
             </div>
           </form>
@@ -290,40 +207,28 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import axios from 'axios'
 import Pagination from '../Common/Pagination.vue'
+import { usePagination } from '../Composables/usePagination'
+
+const { perPage, pagination, setMeta, debounce } = usePagination(15)
 
 const stocks = ref([])
 const warehouses = ref([])
 const products = ref([])
 const loading = ref(false)
-const perPage = ref(15)
 
 const filters = reactive({
   warehouse_id: '',
   search: '',
-  page: 1
-})
-
-const pagination = ref({
-  current_page: 1,
-  last_page: 1,
-  total: 0,
-  from: 0,
-  to: 0
 })
 
 const isModalOpen = ref(false)
-const isSupplyModalOpen = ref(false)
 const notification = ref(null)
 
 const transferForm = reactive({
   from_warehouse_id: '',
   to_warehouse_id: '',
-  items: [{ product_id: '', count: 1 }]
-})
-
-const supplyForm = reactive({
-  warehouse_id: '',
   items: [{ product_id: '', count: 1 }]
 })
 
@@ -335,9 +240,8 @@ onMounted(async () => {
 
 const fetchWarehouses = async () => {
   try {
-    const res = await fetch('/api/warehouses')
-    const json = await res.json()
-    warehouses.value = json.data || json
+    const res = await axios.get('/api/warehouses')
+    warehouses.value = res.data.data || res.data
   } catch (e) {
     showNotification('Ошибка загрузки складов', 'danger')
   }
@@ -345,9 +249,8 @@ const fetchWarehouses = async () => {
 
 const fetchProducts = async () => {
   try {
-    const res = await fetch('/api/warehouses/products')
-    const json = await res.json()
-    products.value = json.data || json
+    const res = await axios.get('/api/products')
+    products.value = res.data.data || res.data
   } catch (e) {
     showNotification('Ошибка загрузки товаров', 'danger')
   }
@@ -356,24 +259,17 @@ const fetchProducts = async () => {
 const fetchStocks = async (page = 1) => {
   loading.value = true
   try {
-    filters.page = page
-    let url = `/api/warehouses/stocks?page=${page}&per_page=${perPage.value}`
-    if (filters.warehouse_id) url += `&warehouse_id=${filters.warehouse_id}`
-    if (filters.search) url += `&search=${filters.search}`
-
-    const res = await fetch(url)
-    const json = await res.json()
-    
-    stocks.value = json.data || []
-    
-    // Формируем структуру данных в snake_case для компонента Pagination
-    pagination.value = {
-      current_page: json.meta?.current_page || json.current_page || 1,
-      last_page: json.meta?.last_page || json.last_page || 1,
-      total: json.meta?.total || json.total || 0,
-      from: json.meta?.from || json.from || 0,
-      to: json.meta?.to || json.to || 0
+    const params = {
+      page,
+      per_page: perPage.value,
+      warehouse_id: filters.warehouse_id || undefined,
+      search: filters.search || undefined,
     }
+
+    const res = await axios.get('/api/stocks', { params })
+
+    stocks.value = res.data.data || []
+    setMeta(res.data.meta)
   } catch (e) {
     showNotification('Ошибка загрузки остатков', 'danger')
   } finally {
@@ -385,13 +281,7 @@ const changePerPage = () => {
   fetchStocks(1)
 }
 
-let searchTimeout = null
-const debouncedFetchStocks = () => {
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    fetchStocks(1)
-  }, 300)
-}
+const debouncedFetchStocks = debounce(() => fetchStocks(1))
 
 const resetFilters = () => {
   filters.warehouse_id = ''
@@ -420,69 +310,14 @@ const submitTransfer = async () => {
   notification.value = null
 
   try {
-    const res = await fetch('/api/warehouses/transfers', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(transferForm)
-    })
-
-    const data = await res.json()
-
-    if (!res.ok) throw new Error(data.message || 'Ошибка проведения перемещения')
+    await axios.post('/api/transfers', transferForm)
 
     showNotification('Перемещение успешно создано и проведено!', 'success')
     isModalOpen.value = false
     fetchStocks(1)
   } catch (err) {
-    showNotification(err.message, 'danger')
-  } finally {
-    loading.value = false
-  }
-}
-
-const addSupplyItem = () => {
-  supplyForm.items.push({ product_id: '', count: 1 })
-}
-
-const removeSupplyItem = (index) => {
-  supplyForm.items.splice(index, 1)
-}
-
-const submitSupply = async () => {
-  loading.value = true
-  notification.value = null
-
-  try {
-    const res = await fetch('/api/supplies', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(supplyForm)
-    })
-
-    const data = await res.json()
-
-    if (!res.ok) {
-      if (data.errors) {
-        const errorMsgs = []
-        for (const field in data.errors) {
-          errorMsgs.push(...data.errors[field])
-        }
-        throw new Error(errorMsgs.join(' '))
-      }
-      throw new Error(data.message || 'Ошибка создания поставки')
-    }
-
-    showNotification('Поставка успешно создана и проведена!', 'success')
-    isSupplyModalOpen.value = false
-    fetchStocks(1)
-  } catch (err) {
-    showNotification(err.message, 'danger')
+    const message = err.response?.data?.message || 'Ошибка проведения перемещения'
+    showNotification(message, 'danger')
   } finally {
     loading.value = false
   }

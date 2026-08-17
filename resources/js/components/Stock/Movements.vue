@@ -106,24 +106,18 @@
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import Pagination from '../Common/Pagination.vue';
+import { usePagination } from '../Composables/usePagination';
+
+const { perPage, pagination, setMeta, debounce } = usePagination(15);
 
 const movements = ref([]);
 const warehouses = ref([]);
 const loading = ref(false);
-const perPage = ref(15);
 
 const filters = reactive({
   warehouse_id: '',
   search: '',
   doc_type: '',
-});
-
-const pagination = ref({
-  current_page: 1,
-  last_page: 1,
-  total: 0,
-  from: 0,
-  to: 0,
 });
 
 const getDocumentLabel = (docType) => {
@@ -160,7 +154,7 @@ const fetchMovements = async (page = 1) => {
     };
     const res = await axios.get('/api/stock-movements', { params });
     movements.value = res.data.data;
-    pagination.value = res.data.meta;
+    setMeta(res.data.meta);
   } catch (err) {
     alert('Ошибка загрузки истории движений');
   } finally {
@@ -172,13 +166,7 @@ const changePerPage = () => {
   fetchMovements(1);
 };
 
-let searchTimeout = null;
-const debouncedFetchMovements = () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    fetchMovements(1);
-  }, 300);
-};
+const debouncedFetchMovements = debounce(() => fetchMovements(1));
 
 const resetFilters = () => {
   filters.warehouse_id = '';

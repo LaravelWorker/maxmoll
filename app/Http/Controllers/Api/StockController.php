@@ -20,7 +20,12 @@ class StockController extends Controller
     {
         $query = Stock::query()->with(['warehouse', 'product']);
 
-        // Регистронезависимый поиск по названию склада
+        // Точный фильтр по конкретному складу
+        if ($request->filled('warehouse_id')) {
+            $query->where('warehouse_id', $request->input('warehouse_id'));
+        }
+
+        // Поиск по названию склада
         if ($request->filled('warehouse')) {
             $warehouseName = $request->input('warehouse');
             $query->whereHas('warehouse', function ($q) use ($warehouseName) {
@@ -28,9 +33,9 @@ class StockController extends Controller
             });
         }
 
-        // Регистронезависимый поиск по названию товара
-        if ($request->filled('product')) {
-            $productName = mb_strtolower(trim($request->input('product')));
+        // Поиск по названию товара (общий параметр search либо product)
+        $productName = $request->input('search', $request->input('product'));
+        if (!empty($productName)) {
             $query->whereHas('product', function ($q) use ($productName) {
                 $q->where('name', 'like', "%{$productName}%");
             });
