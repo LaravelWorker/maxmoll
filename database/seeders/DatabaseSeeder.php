@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Consts\OrderStatus;
 use App\Models\Customer;
 use App\Models\Product;
-use App\Models\Stock;
 use App\Models\Warehouse;
 use App\Services\OrderService;
 use App\Services\SupplyService;
@@ -32,20 +30,25 @@ class DatabaseSeeder extends Seeder
         $customers = Customer::factory(10)->create();
         $warehouses = Warehouse::factory(4)->create();
 
-        // 2. Создаем начальные складские остатки (базовый баланс)
+        // 2. Первоначальный ввод остатков через SupplyService
         foreach ($warehouses as $warehouse) {
+            $items = [];
             foreach ($products->random(15) as $product) {
-                Stock::create([
-                    'warehouse_id' => $warehouse->id,
-                    'product_id'   => $product->id,
-                    'stock'        => rand(200, 1000),
-                ]);
+                $items[] = [
+                    'product_id' => $product->id,
+                    'count'      => rand(200, 1000),
+                ];
             }
+
+            $supplyService->createAndExecute([
+                'warehouse_id' => $warehouse->id,
+                'items'        => $items,
+            ]);
         }
 
-        // 3. Генерируем поставки через SupplyService (автоматически создает Supply, SupplyItem, движения и пополняет stock)
+        // 3. Генерируем дополнительные операционные поставки через SupplyService
         foreach ($warehouses as $warehouse) {
-            for ($i = 0; $i < 3; $i++) {
+            for ($i = 0; $i < 2; $i++) {
                 $items = [];
                 foreach ($products->random(rand(2, 5)) as $product) {
                     $items[] = [
@@ -82,12 +85,11 @@ class DatabaseSeeder extends Seeder
                         'items'        => $items,
                     ]);
 
-                    // Часть заказов завершаем с помощью бизнес-логики сервиса (атомарное списание + аудит)
+                    // Завершаем или отменяем заказы строго через методы OrderService
                     if (fake()->boolean(60)) {
                         $orderService->complete($order);
                     } elseif (fake()->boolean(30)) {
-                        // Часть заказов отменяем
-                        $order->update(['status' => OrderStatus::CANCELED->value]);
+                        $orderService->cancel($order);
                     }
                 } catch (\Throwable $e) {
                     // Пропускаем в случае нехватки товара

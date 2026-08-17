@@ -101,22 +101,8 @@
       </div>
     </div>
 
-    <!-- Пагинация -->
-    <div class="d-flex justify-content-between align-items-center mt-3" v-if="pagination.total > 0">
-      <div class="text-muted small">
-      </div>
-      <ul class="pagination pagination-sm m-0">
-        <li class="page-item" :class="{ disabled: pagination.currentPage === 1 }">
-          <button class="page-link" @click="changePage(pagination.currentPage - 1)">Назад</button>
-        </li>
-        <li class="page-item disabled">
-          <span class="page-link">Стр. {{ pagination.currentPage }} из {{ pagination.lastPage }}</span>
-        </li>
-        <li class="page-item" :class="{ disabled: pagination.currentPage === pagination.lastPage }">
-          <button class="page-link" @click="changePage(pagination.currentPage + 1)">Вперед</button>
-        </li>
-      </ul>
-    </div>
+    <!-- Компонент пагинации -->
+    <Pagination :pagination="pagination" @change="fetchStocks" />
 
     <!-- Модальное окно перемещения -->
     <div v-if="isModalOpen" class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
@@ -304,6 +290,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import Pagination from '../Common/Pagination.vue'
 
 const stocks = ref([])
 const warehouses = ref([])
@@ -318,8 +305,8 @@ const filters = reactive({
 })
 
 const pagination = ref({
-  currentPage: 1,
-  lastPage: 1,
+  current_page: 1,
+  last_page: 1,
   total: 0,
   from: 0,
   to: 0
@@ -378,12 +365,14 @@ const fetchStocks = async (page = 1) => {
     const json = await res.json()
     
     stocks.value = json.data || []
+    
+    // Формируем структуру данных в snake_case для компонента Pagination
     pagination.value = {
-      currentPage: json.current_page || json.meta?.current_page || 1,
-      lastPage: json.last_page || json.meta?.last_page || 1,
-      total: json.total || json.meta?.total || 0,
-      from: json.from || json.meta?.from || 0,
-      to: json.to || json.meta?.to || 0
+      current_page: json.meta?.current_page || json.current_page || 1,
+      last_page: json.meta?.last_page || json.last_page || 1,
+      total: json.meta?.total || json.total || 0,
+      from: json.meta?.from || json.from || 0,
+      to: json.meta?.to || json.to || 0
     }
   } catch (e) {
     showNotification('Ошибка загрузки остатков', 'danger')
@@ -409,10 +398,6 @@ const resetFilters = () => {
   filters.search = ''
   perPage.value = 15
   fetchStocks(1)
-}
-
-const changePage = (page) => {
-  fetchStocks(page)
 }
 
 const openTransferModal = () => {

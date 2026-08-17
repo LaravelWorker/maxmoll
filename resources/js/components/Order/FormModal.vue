@@ -139,6 +139,5 @@ const saveOrder = async () => {
   }
 };
 
-
 onMounted(() => loadDictionaries());
 </script>

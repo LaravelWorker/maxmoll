@@ -28,22 +28,12 @@ class StockMovementIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Фильтрация по конкретному складу (проверяется реальное существование ID в таблице складов)
             'warehouse_id' => ['nullable', 'integer', 'exists:warehouses,id'],
-            
-            // Фильтрация по конкретному товару (проверяется реальное существование ID в таблице товаров)
             'product_id'   => ['nullable', 'integer', 'exists:products,id'],
-            
-            // Фильтрация по типу документа-источника, вызвавшего движение (разрешены только order, supply, transfer)
-            'doc_type'     => ['nullable', 'string', 'in:order,supply,transfer'],
-            
-            // Начальная дата для фильтрации движений по периоду времени
+            'search'       => ['nullable', 'string', 'max:255'],
+            'doc_type'     => ['nullable', 'string'],
             'date_from'    => ['nullable', 'date'],
-            
-            // Конечная дата периода (для логической целостности не может быть раньше date_from)
-            'date_to'      => ['nullable', 'date', 'after_or_equal:date_from'],
-            
-            // Количество записей на одну страницу для пагинации (в пределах от 1 до 100)
+            'date_to'      => ['nullable', 'date'],
             'per_page'     => ['nullable', 'integer', 'min:1', 'max:100'],
         ];
     }

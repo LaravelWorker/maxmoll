@@ -106,22 +106,8 @@
       </div>
     </div>
 
-    <!-- Настраиваемая Пагинация -->
-    <div class="d-flex justify-content-between align-items-center mt-3" v-if="pagination.total > 0">
-      <div class="text-muted small">
-      </div>
-      <ul class="pagination pagination-sm m-0">
-        <li class="page-item" :class="{ disabled: !pagination.prev }">
-          <button class="page-link" @click="fetchCustomers(pagination.currentPage - 1)">Назад</button>
-        </li>
-        <li class="page-item disabled">
-          <span class="page-link">Стр. {{ pagination.currentPage }} из {{ pagination.lastPage }}</span>
-        </li>
-        <li class="page-item" :class="{ disabled: !pagination.next }">
-          <button class="page-link" @click="fetchCustomers(pagination.currentPage + 1)">Вперед</button>
-        </li>
-      </ul>
-    </div>
+    <!-- Переиспользуемый компонент пагинации -->
+    <Pagination :pagination="pagination" @change="fetchCustomers" />
 
     <!-- Модальное окно создания/редактирования -->
     <CustomerFormModal 
@@ -137,6 +123,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import CustomerFormModal from './FormModal.vue';
+import Pagination from '../Common/Pagination.vue';
 
 const customers = ref([]);
 const loading = ref(false);
@@ -151,13 +138,11 @@ const filters = reactive({
 });
 
 const pagination = ref({
-  currentPage: 1,
-  lastPage: 1,
+  current_page: 1,
+  last_page: 1,
   total: 0,
   from: 0,
   to: 0,
-  prev: null,
-  next: null,
 });
 
 const fetchCustomers = async (page = 1) => {
@@ -171,15 +156,7 @@ const fetchCustomers = async (page = 1) => {
 
     const res = await axios.get('/api/customers', { params });
     customers.value = res.data.data;
-    pagination.value = {
-      currentPage: res.data.meta.current_page,
-      lastPage: res.data.meta.last_page,
-      total: res.data.meta.total,
-      from: res.data.meta.from,
-      to: res.data.meta.to,
-      prev: res.data.links.prev,
-      next: res.data.links.next,
-    };
+    pagination.value = res.data.meta;
   } catch (err) {
     console.error('Ошибка при загрузке покупателей:', err);
     alert('Ошибка при загрузке покупателей');
@@ -220,7 +197,7 @@ const openEditModal = (customer) => {
 
 const onCustomerSaved = () => {
   showModal.value = false;
-  fetchCustomers(pagination.value.currentPage);
+  fetchCustomers(pagination.value.current_page);
 };
 
 onMounted(() => fetchCustomers(1));

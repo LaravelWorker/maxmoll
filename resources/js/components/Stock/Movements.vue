@@ -97,28 +97,15 @@
       </div>
     </div>
 
-    <!-- Пагинация -->
-    <div class="d-flex justify-content-between align-items-center mt-3" v-if="pagination.total > 0">
-      <div class="text-muted small">
-      </div>
-      <ul class="pagination pagination-sm m-0">
-        <li class="page-item" :class="{ disabled: pagination.currentPage === 1 }">
-          <button class="page-link" @click="fetchMovements(pagination.currentPage - 1)">Назад</button>
-        </li>
-        <li class="page-item disabled">
-          <span class="page-link">Стр. {{ pagination.currentPage }} из {{ pagination.lastPage }}</span>
-        </li>
-        <li class="page-item" :class="{ disabled: pagination.currentPage === pagination.lastPage }">
-          <button class="page-link" @click="fetchMovements(pagination.currentPage + 1)">Вперед</button>
-        </li>
-      </ul>
-    </div>
+    <!-- Компонент пагинации -->
+    <Pagination :pagination="pagination" @change="fetchMovements" />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
+import Pagination from '../Common/Pagination.vue';
 
 const movements = ref([]);
 const warehouses = ref([]);
@@ -132,8 +119,8 @@ const filters = reactive({
 });
 
 const pagination = ref({
-  currentPage: 1,
-  lastPage: 1,
+  current_page: 1,
+  last_page: 1,
   total: 0,
   from: 0,
   to: 0,
@@ -173,13 +160,7 @@ const fetchMovements = async (page = 1) => {
     };
     const res = await axios.get('/api/stock-movements', { params });
     movements.value = res.data.data;
-    pagination.value = {
-      currentPage: res.data.meta.current_page,
-      lastPage: res.data.meta.last_page,
-      total: res.data.meta.total,
-      from: res.data.meta.from,
-      to: res.data.meta.to,
-    };
+    pagination.value = res.data.meta;
   } catch (err) {
     alert('Ошибка загрузки истории движений');
   } finally {

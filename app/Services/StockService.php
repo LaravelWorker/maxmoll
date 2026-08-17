@@ -12,7 +12,12 @@ class StockService
     /**
      * Атомарное списание товара с проверкой наличия, пессимистичной блокировкой и записью в аудит.
      *
+     * @param int $warehouseId
+     * @param int $productId
+     * @param int $quantity
+     * @param \Illuminate\Database\Eloquent\Model $document
      * @throws \Exception
+     * @return void
      */
     public function decrementStock(int $warehouseId, int $productId, int $quantity, Model $document): void
     {
@@ -36,20 +41,40 @@ class StockService
     }
 
     /**
-     * Атомарное пополнение остатка на складе.
+     * Увеличить остаток товара на складе и зафиксировать движение.
+     *
+     * @param int $warehouseId
+     * @param int $productId
+     * @param int $quantity
+     * @param \Illuminate\Database\Eloquent\Model $document
+     * @return void
      */
     public function incrementStock(int $warehouseId, int $productId, int $quantity, Model $document): void
     {
-        // atomic update / firstOrCreate с блокировкой
-        $stock = Stock::firstOrCreate(
-            ['warehouse_id' => $warehouseId, 'product_id' => $productId],
-            ['stock' => 0]
-        );
+        DB::transaction(function () use ($warehouseId, $productId, $quantity, $document) {
+            // Находим строку с пессимистической блокировкой на чтение/запись
+            $stock = Stock::where('warehouse_id', $warehouseId)
+                ->where('product_id', $productId)
+                ->lockForUpdate()
+                ->first();
 
-        Stock::where('id', $stock->id)->lockForUpdate()->first();
-        $stock->increment('stock', $quantity);
+            // Если записи об остатке ещё нет — безопасно создаем с 0
+            if (!$stock) {
+                $stock = Stock::create([
+                    'warehouse_id' => $warehouseId,
+                    'product_id'   => $productId,
+                    'stock'        => 0,
+                ]);
+            }
 
-        $this->recordMovement($warehouseId, $productId, $quantity, $document);
+            // Атомарно увеличиваем значение в БД
+            $stock->increment('stock', $quantity);
+
+            // Фиксируем запись в истории движений
+            if ($document) {
+                $this->recordMovement($warehouseId, $productId, $quantity, $document);
+            }
+        });
     }
 
     /**

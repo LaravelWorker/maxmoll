@@ -37,7 +37,7 @@
             <label class="form-label small fw-bold">Статус</label>
             <select v-model="filters.status" class="form-select form-select-sm" @change="fetchOrders(1)">
               <option value="">Все статусы</option>
-              <option value="active">Активен</option>
+              <option value="active">Активен</option> 
               <option value="completed">Завершен</option>
               <option value="canceled">Отменен</option>
             </select>
@@ -106,9 +106,7 @@
                 <span v-else class="text-muted small">—</span>
               </td>
               <td>
-                <span :class="getStatusBadgeClass(order.status)" class="badge">
-                  {{ getStatusLabel(order.status) }}
-                </span>
+                <OrderStatusBadge :status="order.status" />
               </td>
               <td>{{ order.created_at }}</td>
               <td class="text-end">
@@ -121,7 +119,7 @@
                       title="Редактировать"
                       @click="openEditModal(order)"
                     >
-                      ✏️ Редактировать
+                      ✏️
                     </button>
                     <button 
                       class="btn btn-outline-success" 
@@ -131,11 +129,18 @@
                       ✅ Завершить
                     </button>
                     <button 
-                      class="btn btn-outline-danger" 
+                      class="btn btn-outline-warning" 
                       title="Отменить заказ"
                       @click="cancelOrder(order)"
                     >
                       🚫 Отменить
+                    </button>
+                    <button 
+                      class="btn btn-outline-danger" 
+                      title="Удалить заказ"
+                      @click="deleteOrder(order)"
+                    >
+                      🗑️
                     </button>
                   </template>
 
@@ -168,23 +173,7 @@
       </div>
     </div>
 
-    <!-- Пагинация -->
-    <div class="d-flex justify-content-between align-items-center mt-3" v-if="pagination.total > 0">
-      <div class="text-muted small">
-        Показано {{ pagination.from || 0 }}–{{ pagination.to || 0 }} из {{ pagination.total }} заказов
-      </div>
-      <ul class="pagination pagination-sm m-0">
-        <li class="page-item" :class="{ disabled: !pagination.prev }">
-          <button class="page-link" @click="fetchOrders(pagination.currentPage - 1)">Назад</button>
-        </li>
-        <li class="page-item disabled">
-          <span class="page-link">Стр. {{ pagination.currentPage }} из {{ pagination.lastPage }}</span>
-        </li>
-        <li class="page-item" :class="{ disabled: !pagination.next }">
-          <button class="page-link" @click="fetchOrders(pagination.currentPage + 1)">Вперед</button>
-        </li>
-      </ul>
-    </div>
+    <Pagination :pagination="pagination" @change="fetchOrders" />
 
     <!-- Модальное окно создания/редактирования -->
     <OrderFormModal 
@@ -200,6 +189,8 @@
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import OrderFormModal from './FormModal.vue';
+import Pagination from '../Common/Pagination.vue'
+import OrderStatusBadge from '../Common/OrderStatusBadge.vue'
 
 const orders = ref([]);
 const loading = ref(false);
@@ -231,32 +222,12 @@ const statusLabels = {
 
 const getStatusLabel = (status) => statusLabels[status] || status;
 
+
 const fetchOrders = async (page = 1) => {
-  loading.value = true;
-  try {
-    const params = {
-      page,
-      per_page: perPage.value,
-      ...filters,
-    };
-    const res = await axios.get('/api/orders', { params });
-    orders.value = res.data.data;
-    pagination.value = {
-      currentPage: res.data.meta.current_page,
-      lastPage: res.data.meta.last_page,
-      total: res.data.meta.total,
-      from: res.data.meta.from,
-      to: res.data.meta.to,
-      prev: res.data.links.prev,
-      next: res.data.links.next,
-    };
-  } catch (err) {
-    console.error('Ошибка при загрузке заказов:', err);
-    alert('Ошибка при загрузке заказов');
-  } finally {
-    loading.value = false;
-  }
-};
+  const response = await axios.get('/api/orders', { params: { page } })
+  orders.value = response.data.data
+  pagination.value = response.data.meta
+}
 
 let searchTimeout = null;
 const debouncedFetchOrders = () => {
@@ -328,6 +299,24 @@ const restoreOrder = async (order) => {
     fetchOrders(pagination.value.currentPage);
   } catch (err) {
     alert(err.response?.data?.message || 'Ошибка возобновления заказа');
+  }
+};
+
+// Удалить заказ
+const deleteOrder = async (order) => {
+  if (!confirm(`Вы действительно хотите удалить заказ #${order.id}?`)) return;
+
+  try {
+    await axios.delete(`/api/orders/${order.id}`);
+    
+    // Если удалили последний элемент на текущей странице, запрашиваем предыдущую
+    const pageToFetch = (orders.value.length === 1 && pagination.value.currentPage > 1)
+      ? pagination.value.currentPage - 1
+      : pagination.value.currentPage;
+
+    fetchOrders(pageToFetch);
+  } catch (err) {
+    alert(err.response?.data?.message || 'Ошибка удаления заказа');
   }
 };
 

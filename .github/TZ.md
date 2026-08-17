@@ -13,6 +13,69 @@
    - Проверь файлы миграций (database/migrations).
    - Убедись, что структуры таблиц products, customers, orders, order_items, warehouses, stocks, supplies, supply_items СТРОГО соответствуют схемам из ТЗ и их поля НЕ менялись.
    - Проверь наличие таблицы stock_movements (с полями warehouse_id, product_id, quantity, doc_type, doc_id, created_at) и таблиц для перемещений (transfers, transfer_items).
+   - вот схема базы данных по требованиям заказчика
+   Таблица products
+   Поля:
+
+   id - unsigned big integer, AI, pk
+   name - varchar(255)
+   price - float
+
+   Таблица customers
+   Поля:
+
+   id - unsigned big integer, AI, pk
+   name - varchar(255)
+   phone - varchar(255), nullable
+   email - varchar(255), nullable
+   created_at - timestamp
+
+   Таблица orders
+   Поля:
+
+   id - unsigned big integer, AI, pk
+   customer_id - unsigned big integer, fk
+   created_at - timestamp
+   completed_at - timestamp
+   warehouse_id - unsigned big integer, fk
+   status - varchar(255) (“active”, “completed”, “canceled”)
+
+   Таблица order_items
+   Поля:
+
+   id - unsigned big integer, AI, pk
+   order_id - unsigned big integer, fk
+   product_id - unsigned big integer, fk
+   count - integer
+
+   Таблица warehouses
+   Поля:
+
+   id - unsigned big integer, AI, pk
+   name - varchar(255)
+
+   Таблица stocks
+   Поля:
+
+   product_id - fk
+   warehouse_id - fk
+   stock - integer
+
+   Таблица supplies
+   Поля:
+
+   id - unsigned big integer, AI, pk
+   warehouse_id - unsigned big integer, fk
+   created_at - timestamp
+
+   Таблица supply_items
+   Поля:
+
+   id - unsigned big integer, AI, pk
+   supply_id - unsigned big integer, fk
+   product_id - unsigned big integer, fk
+   count - integer
+
 
 3. REST API И БИЗНЕС-ЛОГИКА:
    - Проверь реализацию всех обязательных эндпоинтов (warehouses, products, customers, orders, supplies, stock-movements, transfers).

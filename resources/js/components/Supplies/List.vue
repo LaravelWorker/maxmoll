@@ -121,22 +121,8 @@
       </div>
     </div>
 
-    <!-- Пагинация -->
-    <div class="d-flex justify-content-between align-items-center mt-3" v-if="pagination.total > 0">
-      <div class="text-muted small">
-      </div>
-      <ul class="pagination pagination-sm m-0">
-        <li class="page-item" :class="{ disabled: pagination.currentPage === 1 }">
-          <button class="page-link" @click="fetchSupplies(pagination.currentPage - 1)">Назад</button>
-        </li>
-        <li class="page-item disabled">
-          <span class="page-link">Стр. {{ pagination.currentPage }} из {{ pagination.lastPage }}</span>
-        </li>
-        <li class="page-item" :class="{ disabled: pagination.currentPage === pagination.lastPage }">
-          <button class="page-link" @click="fetchSupplies(pagination.currentPage + 1)">Вперед</button>
-        </li>
-      </ul>
-    </div>
+    <!-- Переиспользуемый компонент пагинации -->
+    <Pagination :pagination="pagination" @change="fetchSupplies" />
 
     <!-- Модальное окно создания поставки -->
     <div v-if="isSupplyModalOpen" class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
@@ -226,6 +212,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
+import Pagination from '../Common/Pagination.vue';
 
 const supplies = ref([]);
 const warehouses = ref([]);
@@ -241,8 +228,8 @@ const filters = reactive({
 });
 
 const pagination = ref({
-  currentPage: 1,
-  lastPage: 1,
+  current_page: 1,
+  last_page: 1,
   total: 0,
   from: 0,
   to: 0,
@@ -266,12 +253,12 @@ const fetchSupplies = async (page = 1) => {
     };
     const res = await axios.get('/api/supplies', { params });
     supplies.value = res.data.data || [];
-    pagination.value = {
-      currentPage: res.data.meta?.current_page || 1,
-      lastPage: res.data.meta?.last_page || 1,
-      total: res.data.meta?.total || 0,
-      from: res.data.meta?.from || 0,
-      to: res.data.meta?.to || 0,
+    pagination.value = res.data.meta || {
+      current_page: 1,
+      last_page: 1,
+      total: 0,
+      from: 0,
+      to: 0,
     };
   } catch (err) {
     showNotification('Ошибка загрузки списка поставок', 'danger');
