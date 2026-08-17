@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
+use App\Models\Supply;
+use App\Models\Transfer;
 use Illuminate\Support\ServiceProvider;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Routing\Route;
@@ -28,10 +31,10 @@ class AppServiceProvider extends ServiceProvider
             return str_starts_with($route->uri(), 'api/');
         });
 
-        Relation::enforceMorphMap([
-            'order'    => \App\Models\Order::class,
-            'supply'   => \App\Models\Supply::class,
-            'transfer' => \App\Models\Transfer::class,
+        Relation::morphMap([
+            'supply'   => Supply::class,
+            'order'    => Order::class,
+            'transfer' => Transfer::class,
         ]);
-}
+    }
 }

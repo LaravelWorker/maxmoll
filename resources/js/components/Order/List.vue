@@ -173,6 +173,7 @@
       </div>
     </div>
 
+    <!-- Компонент пагинации -->
     <Pagination :pagination="pagination" @change="fetchOrders" />
 
     <!-- Модальное окно создания/редактирования -->
@@ -186,16 +187,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
 import axios from 'axios';
 import OrderFormModal from './FormModal.vue';
-import Pagination from '../Common/Pagination.vue'
-import OrderStatusBadge from '../Common/OrderStatusBadge.vue'
-import { useOrderStatus } from '../Composables/useOrderStatus'
+import Pagination from '../Common/Pagination.vue';
+import OrderStatusBadge from '../Common/OrderStatusBadge.vue';
+import { useOrderStatus } from '../Composables/useOrderStatus';
 
-// Локализованные подписи статусов берём из единого composable (единый источник правды),
-// чтобы не дублировать перевод «active/completed/canceled» в каждом компоненте.
-const { statusLabels } = useOrderStatus()
+const { statusLabels } = useOrderStatus();
 
 const orders = ref([]);
 const loading = ref(false);
@@ -210,30 +209,45 @@ const filters = reactive({
 });
 
 const pagination = ref({
-  currentPage: 1,
-  lastPage: 1,
+  current_page: 1,
+  last_page: 1,
   total: 0,
   from: 0,
   to: 0,
-  prev: null,
-  next: null,
 });
 
-const fetchOrders = async (page = 1) => {
-  const response = await axios.get('/api/orders', { params: { page } })
-  orders.value = response.data.data
-  pagination.value = response.data.meta
-}
+ const fetchOrders = async (page = 1) => {
+  loading.value = true;
+  try {
+    const params = {
+      page,
+      per_page: perPage.value,
+      ...filters,
+    };
 
-let searchTimeout = null;
-const debouncedFetchOrders = () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    fetchOrders(1);
-  }, 300);
+    const response = await axios.get('/api/orders', { params });
+    orders.value = response.data.data;
+    pagination.value = response.data.meta;
+  } catch (err) {
+    console.error('Ошибка при загрузке заказов:', err);
+    alert('Ошибка при загрузке заказов');
+  } finally {
+    loading.value = false;
+  }
 };
 
-const changePerPage = () => fetchOrders(1);
+// Автоматический watcher для всех изменений в фильтрах и perPage
+let searchTimeout = null;
+watch(
+  [filters, perPage],
+  () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      fetchOrders(1);
+    }, 300);
+  },
+  { deep: true }
+);
 
 const resetFilters = () => {
   filters.customer_search = '';
@@ -241,15 +255,6 @@ const resetFilters = () => {
   filters.status = '';
   perPage.value = 15;
   fetchOrders(1);
-};
-
-const getStatusBadgeClass = (status) => {
-  switch (status) {
-    case 'active': return 'bg-warning text-dark';
-    case 'completed': return 'bg-success';
-    case 'canceled': return 'bg-danger';
-    default: return 'bg-secondary';
-  }
 };
 
 const openCreateModal = () => {
@@ -262,53 +267,48 @@ const openEditModal = (order) => {
   showModal.value = true;
 };
 
-// Завершить заказ (списать товары)
 const completeOrder = async (order) => {
   if (!confirm(`Завершить заказ #${order.id}? Товары будут списаны со склада.`)) return;
 
   try {
     await axios.post(`/api/orders/${order.id}/complete`);
-    fetchOrders(pagination.value.currentPage);
+    fetchOrders(pagination.value.current_page);
   } catch (err) {
     alert(err.response?.data?.message || 'Ошибка при завершении заказа');
   }
 };
 
-// Отменить заказ
 const cancelOrder = async (order) => {
   if (!confirm(`Вы действительно хотите отменить заказ #${order.id}?`)) return;
 
   try {
     await axios.post(`/api/orders/${order.id}/cancel`);
-    fetchOrders(pagination.value.currentPage);
+    fetchOrders(pagination.value.current_page);
   } catch (err) {
     alert(err.response?.data?.message || 'Ошибка отмены заказа');
   }
 };
 
-// Возобновить отмененный заказ
 const restoreOrder = async (order) => {
   if (!confirm(`Вы действительно хотите возобновить заказ #${order.id}?`)) return;
 
   try {
     await axios.post(`/api/orders/${order.id}/restore`);
-    fetchOrders(pagination.value.currentPage);
+    fetchOrders(pagination.value.current_page);
   } catch (err) {
     alert(err.response?.data?.message || 'Ошибка возобновления заказа');
   }
 };
 
-// Удалить заказ
 const deleteOrder = async (order) => {
   if (!confirm(`Вы действительно хотите удалить заказ #${order.id}?`)) return;
 
   try {
     await axios.delete(`/api/orders/${order.id}`);
     
-    // Если удалили последний элемент на текущей странице, запрашиваем предыдущую
-    const pageToFetch = (orders.value.length === 1 && pagination.value.currentPage > 1)
-      ? pagination.value.currentPage - 1
-      : pagination.value.currentPage;
+    const pageToFetch = (orders.value.length === 1 && pagination.value.current_page > 1)
+      ? pagination.value.current_page - 1
+      : pagination.value.current_page;
 
     fetchOrders(pageToFetch);
   } catch (err) {
@@ -318,8 +318,8 @@ const deleteOrder = async (order) => {
 
 const onOrderSaved = () => {
   showModal.value = false;
-  fetchOrders(pagination.value.currentPage);
+  fetchOrders(pagination.value.current_page);
 };
 
-onMounted(() => fetchOrders());
+onMounted(() => fetchOrders(1));
 </script>

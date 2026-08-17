@@ -89,7 +89,7 @@ class StockService
             'warehouse_id' => $warehouseId,
             'product_id'   => $productId,
             'quantity'     => $quantity,
-            'doc_type'     => $model::class,
+            'doc_type'     => $model->getMorphClass(),
             'doc_id'       => $model->id,
             'created_at'   => now(),
         ]);

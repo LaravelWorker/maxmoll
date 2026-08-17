@@ -39,7 +39,7 @@
             <div class="mb-3">
               <label class="form-label small fw-bold">Телефон</label>
               <input 
-                type="text" 
+                type="number" 
                 v-model="form.phone" 
                 class="form-control" 
                 placeholder="+7 (999) 000-00-00"

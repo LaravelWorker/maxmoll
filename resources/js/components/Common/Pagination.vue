@@ -32,7 +32,6 @@ const changePage = (page) => {
     class="d-flex justify-content-between align-items-center mt-3"
   >
     <div class="text-muted small">
-      Показано {{ pagination.from || 0 }}–{{ pagination.to || 0 }} из {{ pagination.total || 0 }}
     </div>
 
     <nav>

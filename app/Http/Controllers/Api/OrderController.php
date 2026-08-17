@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
@@ -23,6 +24,7 @@ class OrderController extends Controller
      */
     public function index(OrderIndexRequest $request): AnonymousResourceCollection
     {
+        Log::info($request->all());
         $query = Order::query()->with(['customer', 'warehouse', 'items.product']);
 
         // Фильтрация по названию покупателя

@@ -30,23 +30,24 @@ class OrderIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Фильтрация по статусу заказа (значение должно строго соответствовать допустимым кейсам OrderStatus Enum)
-            'status'       => ['nullable', 'string', Rule::enum(OrderStatus::class)],
+            // Поиск по текстовым совпадениям наименований
+            'customer_search'  => ['nullable', 'string', 'max:255'],
+            'warehouse_search' => ['nullable', 'string', 'max:255'],
+
+            // Фильтрация по статусу заказа
+            'status'           => ['nullable', 'string', Rule::enum(OrderStatus::class)],
             
-            // Фильтрация по конкретному покупателю (проверяется реальное существование ID в таблице customers)
-            'customer_id'  => ['nullable', 'integer', 'exists:customers,id'],
+            // Точные ID
+            'customer_id'      => ['nullable', 'integer', 'exists:customers,id'],
+            'warehouse_id'     => ['nullable', 'integer', 'exists:warehouses,id'],
             
-            // Фильтрация по складу отгрузки (проверяется реальное существование ID в таблице warehouses)
-            'warehouse_id' => ['nullable', 'integer', 'exists:warehouses,id'],
+            // Фильтры по датам
+            'date_from'        => ['nullable', 'date'],
+            'date_to'          => ['nullable', 'date', 'after_or_equal:date_from'],
             
-            // Начальная дата периода для фильтрации по дате создания заказа
-            'date_from'    => ['nullable', 'date'],
-            
-            // Конечная дата периода (должна быть больше или равна дате date_from для логической целостности)
-            'date_to'      => ['nullable', 'date', 'after_or_equal:date_from'],
-            
-            // Лимит элементов на странице для пагинации (ограничен диапазоном от 1 до 100)
-            'per_page'     => ['nullable', 'integer', 'min:1', 'max:100'],
+            // Пагинация
+            'per_page'         => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page'             => ['nullable', 'integer', 'min:1'],
         ];
     }
 }
