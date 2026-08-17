@@ -1,10 +1,14 @@
-name: Claude Code Audit
+name: Claude Code Auto-Fix
 
 on:
-  workflow_dispatch: # Запуск только вручную из вкладки Actions
+  workflow_dispatch: # Ручной запуск
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  audit:
+  audit-and-fix:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -15,11 +19,23 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run Claude Audit
+      - name: Run Claude Auto-Fix
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          npx @anthropic-ai/claude-code --dangerously-skip-permissions -p "Проведи полный аудит проекта на соответствие требованиям из файла .github/TZ.md и выведи детальный отчет в формате Markdown." > audit-report.md
+          npx @anthropic-ai/claude-code --dangerously-skip-permissions -p "Проведи аудит проекта на соответствие требованиям из файла .github/TZ.md. 
+          1. Исправь все найденные критические ошибки, нарушения MVC и архитектурные недочеты прямо в файлах проекта.
+          2. Подготовь подробный отчет о внесенных исправлениях и сохрани его в файл audit-report.md."
+
+      - name: Create Pull Request with Fixes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "fix: автоматические исправления по ТЗ от Claude"
+          title: "🤖 Автоматические исправления по ТЗ (Claude Code)"
+          body-path: audit-report.md
+          branch: claude-autofix
+          delete-branch: true
 
       - name: Upload Audit Artifact
         uses: actions/upload-artifact@v4
