@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for C:\OSPanel\domains\maxmall\app</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="_css/bootstrap.min.css?v=10.1.16" rel="stylesheet" type="text/css">
+  <link href="_css/nv.d3.min.css?v=10.1.16" rel="stylesheet" type="text/css">
+  <link href="_css/style.css?v=10.1.16" rel="stylesheet" type="text/css">
+  <link href="_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="index.html">C:\OSPanel\domains\maxmall\app</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Console/Commands/RefreshDatabaseCommand.php.html#7">App\Console\Commands\RefreshDatabaseCommand</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/CustomerController.php.html#13">App\Http\Controllers\Api\CustomerController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/ProductController.php.html#10">App\Http\Controllers\Api\ProductController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/StockController.php.html#11">App\Http\Controllers\Api\StockController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/StockMovementController.php.html#11">App\Http\Controllers\Api\StockMovementController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/WarehouseController.php.html#19">App\Http\Controllers\Api\WarehouseController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Middleware/Authenticate.php.html#8">App\Http\Middleware\Authenticate</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Middleware/RedirectIfAuthenticated.php.html#11">App\Http\Middleware\RedirectIfAuthenticated</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Middleware/TrustHosts.php.html#7">App\Http\Middleware\TrustHosts</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/CustomerIndexRequest.php.html#11">App\Http\Requests\CustomerIndexRequest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/OrderIndexRequest.php.html#13">App\Http\Requests\OrderIndexRequest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StockIndexRequest.php.html#7">App\Http\Requests\StockIndexRequest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StockMovementIndexRequest.php.html#11">App\Http\Requests\StockMovementIndexRequest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StoreCustomerRequest.php.html#11">App\Http\Requests\StoreCustomerRequest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StoreTransferRequest.php.html#12">App\Http\Requests\StoreTransferRequest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/SupplyIndexRequest.php.html#11">App\Http\Requests\SupplyIndexRequest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/UpdateCustomerRequest.php.html#11">App\Http\Requests\UpdateCustomerRequest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/UpdateOrderRequest.php.html#11">App\Http\Requests\UpdateOrderRequest</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/ProductResource.php.html#12">App\Http\Resources\ProductResource</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/StockMovementResource.php.html#12">App\Http\Resources\StockMovementResource</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/StockResource.php.html#8">App\Http\Resources\StockResource</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/TransferItemResource.php.html#18">App\Http\Resources\TransferItemResource</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/TransferResource.php.html#17">App\Http\Resources\TransferResource</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Product.php.html#20">App\Models\Product</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/StockMovement.php.html#27">App\Models\StockMovement</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/TransferItem.php.html#22">App\Models\TransferItem</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Warehouse.php.html#22">App\Models\Warehouse</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Providers/BroadcastServiceProvider.php.html#8">App\Providers\BroadcastServiceProvider</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#18">App\Http\Controllers\Api\OrderController</a></td><td class="text-right">15%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/SupplyController.php.html#13">App\Http\Controllers\Api\SupplyController</a></td><td class="text-right">28%</td></tr>
+       <tr><td><a href="Models/Transfer.php.html#24">App\Models\Transfer</a></td><td class="text-right">33%</td></tr>
+       <tr><td><a href="Models/OrderItem.php.html#22">App\Models\OrderItem</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Models/SupplyItem.php.html#22">App\Models\SupplyItem</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Models/Stock.php.html#18">App\Models\Stock</a></td><td class="text-right">62%</td></tr>
+       <tr><td><a href="Console/Kernel.php.html#8">App\Console\Kernel</a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Providers/AppServiceProvider.php.html#10">App\Providers\AppServiceProvider</a></td><td class="text-right">88%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#18">App\Http\Controllers\Api\OrderController</a></td><td class="text-right">192</td></tr>
+       <tr><td><a href="Http/Controllers/Api/CustomerController.php.html#13">App\Http\Controllers\Api\CustomerController</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Http/Controllers/Api/StockMovementController.php.html#11">App\Http\Controllers\Api\StockMovementController</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Http/Controllers/Api/WarehouseController.php.html#19">App\Http\Controllers\Api\WarehouseController</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Console/Commands/RefreshDatabaseCommand.php.html#7">App\Console\Commands\RefreshDatabaseCommand</a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Http/Middleware/RedirectIfAuthenticated.php.html#11">App\Http\Middleware\RedirectIfAuthenticated</a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Http/Controllers/Api/SupplyController.php.html#13">App\Http\Controllers\Api\SupplyController</a></td><td class="text-right">14</td></tr>
+       <tr><td><a href="Http/Controllers/Api/StockController.php.html#11">App\Http\Controllers\Api\StockController</a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Models/Stock.php.html#18">App\Models\Stock</a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Http/Middleware/Authenticate.php.html#8">App\Http\Middleware\Authenticate</a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Console/Commands/RefreshDatabaseCommand.php.html#26"><abbr title="App\Console\Commands\RefreshDatabaseCommand::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Console/Kernel.php.html#13"><abbr title="App\Console\Kernel::schedule">schedule</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/CustomerController.php.html#25"><abbr title="App\Http\Controllers\Api\CustomerController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/CustomerController.php.html#76"><abbr title="App\Http\Controllers\Api\CustomerController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/CustomerController.php.html#95"><abbr title="App\Http\Controllers\Api\CustomerController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#31"><abbr title="App\Http\Controllers\Api\OrderController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#99"><abbr title="App\Http\Controllers\Api\OrderController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#152"><abbr title="App\Http\Controllers\Api\OrderController::cancel">cancel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#181"><abbr title="App\Http\Controllers\Api\OrderController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#204"><abbr title="App\Http\Controllers\Api\OrderController::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/ProductController.php.html#21"><abbr title="App\Http\Controllers\Api\ProductController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/StockController.php.html#19"><abbr title="App\Http\Controllers\Api\StockController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/StockMovementController.php.html#23"><abbr title="App\Http\Controllers\Api\StockMovementController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/SupplyController.php.html#25"><abbr title="App\Http\Controllers\Api\SupplyController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/WarehouseController.php.html#29"><abbr title="App\Http\Controllers\Api\WarehouseController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/WarehouseController.php.html#50"><abbr title="App\Http\Controllers\Api\WarehouseController::storeTransfer">storeTransfer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/WarehouseController.php.html#78"><abbr title="App\Http\Controllers\Api\WarehouseController::stocks">stocks</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/WarehouseController.php.html#108"><abbr title="App\Http\Controllers\Api\WarehouseController::products">products</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Middleware/Authenticate.php.html#13"><abbr title="App\Http\Middleware\Authenticate::redirectTo">redirectTo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Middleware/RedirectIfAuthenticated.php.html#18"><abbr title="App\Http\Middleware\RedirectIfAuthenticated::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Middleware/TrustHosts.php.html#14"><abbr title="App\Http\Middleware\TrustHosts::hosts">hosts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/CustomerIndexRequest.php.html#18"><abbr title="App\Http\Requests\CustomerIndexRequest::authorize">authorize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/CustomerIndexRequest.php.html#28"><abbr title="App\Http\Requests\CustomerIndexRequest::rules">rules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/OrderIndexRequest.php.html#20"><abbr title="App\Http\Requests\OrderIndexRequest::authorize">authorize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/OrderIndexRequest.php.html#30"><abbr title="App\Http\Requests\OrderIndexRequest::rules">rules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StockIndexRequest.php.html#12"><abbr title="App\Http\Requests\StockIndexRequest::authorize">authorize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StockIndexRequest.php.html#20"><abbr title="App\Http\Requests\StockIndexRequest::rules">rules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StockIndexRequest.php.html#34"><abbr title="App\Http\Requests\StockIndexRequest::messages">messages</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StockMovementIndexRequest.php.html#18"><abbr title="App\Http\Requests\StockMovementIndexRequest::authorize">authorize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StockMovementIndexRequest.php.html#28"><abbr title="App\Http\Requests\StockMovementIndexRequest::rules">rules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StoreCustomerRequest.php.html#18"><abbr title="App\Http\Requests\StoreCustomerRequest::authorize">authorize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StoreCustomerRequest.php.html#28"><abbr title="App\Http\Requests\StoreCustomerRequest::rules">rules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StoreCustomerRequest.php.html#42"><abbr title="App\Http\Requests\StoreCustomerRequest::messages">messages</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StoreTransferRequest.php.html#19"><abbr title="App\Http\Requests\StoreTransferRequest::authorize">authorize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StoreTransferRequest.php.html#29"><abbr title="App\Http\Requests\StoreTransferRequest::rules">rules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/StoreTransferRequest.php.html#54"><abbr title="App\Http\Requests\StoreTransferRequest::messages">messages</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/SupplyIndexRequest.php.html#18"><abbr title="App\Http\Requests\SupplyIndexRequest::authorize">authorize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/SupplyIndexRequest.php.html#28"><abbr title="App\Http\Requests\SupplyIndexRequest::rules">rules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/UpdateCustomerRequest.php.html#18"><abbr title="App\Http\Requests\UpdateCustomerRequest::authorize">authorize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/UpdateCustomerRequest.php.html#28"><abbr title="App\Http\Requests\UpdateCustomerRequest::rules">rules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/UpdateCustomerRequest.php.html#44"><abbr title="App\Http\Requests\UpdateCustomerRequest::messages">messages</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/UpdateOrderRequest.php.html#18"><abbr title="App\Http\Requests\UpdateOrderRequest::authorize">authorize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Requests/UpdateOrderRequest.php.html#28"><abbr title="App\Http\Requests\UpdateOrderRequest::rules">rules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/ProductResource.php.html#20"><abbr title="App\Http\Resources\ProductResource::toArray">toArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/StockMovementResource.php.html#20"><abbr title="App\Http\Resources\StockMovementResource::toArray">toArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/StockResource.php.html#15"><abbr title="App\Http\Resources\StockResource::toArray">toArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/TransferItemResource.php.html#25"><abbr title="App\Http\Resources\TransferItemResource::toArray">toArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Resources/TransferResource.php.html#24"><abbr title="App\Http\Resources\TransferResource::toArray">toArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/OrderItem.php.html#62"><abbr title="App\Models\OrderItem::order">order</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Product.php.html#60"><abbr title="App\Models\Product::warehouses">warehouses</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Stock.php.html#58"><abbr title="App\Models\Stock::product">product</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Stock.php.html#66"><abbr title="App\Models\Stock::warehouse">warehouse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/StockMovement.php.html#72"><abbr title="App\Models\StockMovement::doc">doc</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/StockMovement.php.html#83"><abbr title="App\Models\StockMovement::warehouse">warehouse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/StockMovement.php.html#94"><abbr title="App\Models\StockMovement::product">product</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/SupplyItem.php.html#62"><abbr title="App\Models\SupplyItem::supply">supply</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Transfer.php.html#64"><abbr title="App\Models\Transfer::fromWarehouse">fromWarehouse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Transfer.php.html#75"><abbr title="App\Models\Transfer::toWarehouse">toWarehouse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/TransferItem.php.html#62"><abbr title="App\Models\TransferItem::transfer">transfer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/TransferItem.php.html#73"><abbr title="App\Models\TransferItem::product">product</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Warehouse.php.html#50"><abbr title="App\Models\Warehouse::orders">orders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Warehouse.php.html#62"><abbr title="App\Models\Warehouse::products">products</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Warehouse.php.html#74"><abbr title="App\Models\Warehouse::supplies">supplies</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Providers/BroadcastServiceProvider.php.html#13"><abbr title="App\Providers\BroadcastServiceProvider::boot">boot</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#126"><abbr title="App\Http\Controllers\Api\OrderController::complete">complete</abbr></a></td><td class="text-right">42%</td></tr>
+       <tr><td><a href="Models/Stock.php.html#78"><abbr title="App\Models\Stock::setKeysForSaveQuery">setKeysForSaveQuery</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="Providers/AppServiceProvider.php.html#24"><abbr title="App\Providers\AppServiceProvider::boot">boot</abbr></a></td><td class="text-right">87%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Http/Controllers/Api/StockMovementController.php.html#23"><abbr title="App\Http\Controllers\Api\StockMovementController::index">index</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Console/Commands/RefreshDatabaseCommand.php.html#26"><abbr title="App\Console\Commands\RefreshDatabaseCommand::handle">handle</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Http/Controllers/Api/CustomerController.php.html#25"><abbr title="App\Http\Controllers\Api\CustomerController::index">index</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#31"><abbr title="App\Http\Controllers\Api\OrderController::index">index</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Http/Controllers/Api/SupplyController.php.html#25"><abbr title="App\Http\Controllers\Api\SupplyController::index">index</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Http/Middleware/RedirectIfAuthenticated.php.html#18"><abbr title="App\Http\Middleware\RedirectIfAuthenticated::handle">handle</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#204"><abbr title="App\Http\Controllers\Api\OrderController::restore">restore</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Http/Controllers/Api/StockController.php.html#19"><abbr title="App\Http\Controllers\Api\StockController::index">index</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Http/Controllers/Api/WarehouseController.php.html#78"><abbr title="App\Http\Controllers\Api\WarehouseController::stocks">stocks</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#99"><abbr title="App\Http\Controllers\Api\OrderController::update">update</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#152"><abbr title="App\Http\Controllers\Api\OrderController::cancel">cancel</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#181"><abbr title="App\Http\Controllers\Api\OrderController::destroy">destroy</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Http/Controllers/Api/WarehouseController.php.html#50"><abbr title="App\Http\Controllers\Api\WarehouseController::storeTransfer">storeTransfer</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Http/Middleware/Authenticate.php.html#13"><abbr title="App\Http\Middleware\Authenticate::redirectTo">redirectTo</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Models/Stock.php.html#78"><abbr title="App\Models\Stock::setKeysForSaveQuery">setKeysForSaveQuery</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Http/Controllers/Api/OrderController.php.html#126"><abbr title="App\Http\Controllers\Api\OrderController::complete">complete</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 10.1.16</a> using <a href="https://www.php.net/" target="_top">PHP 8.1.9</a> and <a href="https://phpunit.de/">PHPUnit 10.5.64</a> at Mon Aug 17 9:20:35 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="_js/jquery.min.js?v=10.1.16" type="text/javascript"></script>
+  <script src="_js/d3.min.js?v=10.1.16" type="text/javascript"></script>
+  <script src="_js/nv.d3.min.js?v=10.1.16" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([28,0,1,1,1,0,2,2,0,1,0,28], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([64,0,0,0,0,1,0,0,0,2,0,49], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,5,"<a href=\"Console\/Commands\/RefreshDatabaseCommand.php.html#7\">App\\Console\\Commands\\RefreshDatabaseCommand<\/a>"],[66.66666666666666,2,"<a href=\"Console\/Kernel.php.html#8\">App\\Console\\Kernel<\/a>"],[100,1,"<a href=\"Exceptions\/Handler.php.html#8\">App\\Exceptions\\Handler<\/a>"],[0,7,"<a href=\"Http\/Controllers\/Api\/CustomerController.php.html#13\">App\\Http\\Controllers\\Api\\CustomerController<\/a>"],[15.384615384615385,17,"<a href=\"Http\/Controllers\/Api\/OrderController.php.html#18\">App\\Http\\Controllers\\Api\\OrderController<\/a>"],[0,1,"<a href=\"Http\/Controllers\/Api\/ProductController.php.html#10\">App\\Http\\Controllers\\Api\\ProductController<\/a>"],[0,3,"<a href=\"Http\/Controllers\/Api\/StockController.php.html#11\">App\\Http\\Controllers\\Api\\StockController<\/a>"],[0,7,"<a href=\"Http\/Controllers\/Api\/StockMovementController.php.html#11\">App\\Http\\Controllers\\Api\\StockMovementController<\/a>"],[28.57142857142857,5,"<a href=\"Http\/Controllers\/Api\/SupplyController.php.html#13\">App\\Http\\Controllers\\Api\\SupplyController<\/a>"],[0,7,"<a href=\"Http\/Controllers\/Api\/WarehouseController.php.html#19\">App\\Http\\Controllers\\Api\\WarehouseController<\/a>"],[100,0,"<a href=\"Http\/Controllers\/Controller.php.html#9\">App\\Http\\Controllers\\Controller<\/a>"],[100,0,"<a href=\"Http\/Kernel.php.html#7\">App\\Http\\Kernel<\/a>"],[0,2,"<a href=\"Http\/Middleware\/Authenticate.php.html#8\">App\\Http\\Middleware\\Authenticate<\/a>"],[100,0,"<a href=\"Http\/Middleware\/EncryptCookies.php.html#7\">App\\Http\\Middleware\\EncryptCookies<\/a>"],[100,0,"<a href=\"Http\/Middleware\/PreventRequestsDuringMaintenance.php.html#7\">App\\Http\\Middleware\\PreventRequestsDuringMaintenance<\/a>"],[0,4,"<a href=\"Http\/Middleware\/RedirectIfAuthenticated.php.html#11\">App\\Http\\Middleware\\RedirectIfAuthenticated<\/a>"],[100,0,"<a href=\"Http\/Middleware\/TrimStrings.php.html#7\">App\\Http\\Middleware\\TrimStrings<\/a>"],[0,1,"<a href=\"Http\/Middleware\/TrustHosts.php.html#7\">App\\Http\\Middleware\\TrustHosts<\/a>"],[100,0,"<a href=\"Http\/Middleware\/TrustProxies.php.html#8\">App\\Http\\Middleware\\TrustProxies<\/a>"],[100,0,"<a href=\"Http\/Middleware\/ValidateSignature.php.html#7\">App\\Http\\Middleware\\ValidateSignature<\/a>"],[100,0,"<a href=\"Http\/Middleware\/VerifyCsrfToken.php.html#7\">App\\Http\\Middleware\\VerifyCsrfToken<\/a>"],[0,2,"<a href=\"Http\/Requests\/CustomerIndexRequest.php.html#11\">App\\Http\\Requests\\CustomerIndexRequest<\/a>"],[0,2,"<a href=\"Http\/Requests\/OrderIndexRequest.php.html#13\">App\\Http\\Requests\\OrderIndexRequest<\/a>"],[0,3,"<a href=\"Http\/Requests\/StockIndexRequest.php.html#7\">App\\Http\\Requests\\StockIndexRequest<\/a>"],[0,2,"<a href=\"Http\/Requests\/StockMovementIndexRequest.php.html#11\">App\\Http\\Requests\\StockMovementIndexRequest<\/a>"],[0,3,"<a href=\"Http\/Requests\/StoreCustomerRequest.php.html#11\">App\\Http\\Requests\\StoreCustomerRequest<\/a>"],[100,3,"<a href=\"Http\/Requests\/StoreOrderRequest.php.html#12\">App\\Http\\Requests\\StoreOrderRequest<\/a>"],[100,3,"<a href=\"Http\/Requests\/StoreSupplyRequest.php.html#12\">App\\Http\\Requests\\StoreSupplyRequest<\/a>"],[0,3,"<a href=\"Http\/Requests\/StoreTransferRequest.php.html#12\">App\\Http\\Requests\\StoreTransferRequest<\/a>"],[0,2,"<a href=\"Http\/Requests\/SupplyIndexRequest.php.html#11\">App\\Http\\Requests\\SupplyIndexRequest<\/a>"],[0,3,"<a href=\"Http\/Requests\/UpdateCustomerRequest.php.html#11\">App\\Http\\Requests\\UpdateCustomerRequest<\/a>"],[0,2,"<a href=\"Http\/Requests\/UpdateOrderRequest.php.html#11\">App\\Http\\Requests\\UpdateOrderRequest<\/a>"],[100,1,"<a href=\"Http\/Resources\/CustomerResource.php.html#12\">App\\Http\\Resources\\CustomerResource<\/a>"],[100,1,"<a href=\"Http\/Resources\/OrderItemResource.php.html#12\">App\\Http\\Resources\\OrderItemResource<\/a>"],[100,1,"<a href=\"Http\/Resources\/OrderResource.php.html#13\">App\\Http\\Resources\\OrderResource<\/a>"],[0,1,"<a href=\"Http\/Resources\/ProductResource.php.html#12\">App\\Http\\Resources\\ProductResource<\/a>"],[0,1,"<a href=\"Http\/Resources\/StockMovementResource.php.html#12\">App\\Http\\Resources\\StockMovementResource<\/a>"],[0,1,"<a href=\"Http\/Resources\/StockResource.php.html#8\">App\\Http\\Resources\\StockResource<\/a>"],[100,1,"<a href=\"Http\/Resources\/SupplyItemResource.php.html#12\">App\\Http\\Resources\\SupplyItemResource<\/a>"],[100,1,"<a href=\"Http\/Resources\/SupplyResource.php.html#13\">App\\Http\\Resources\\SupplyResource<\/a>"],[0,1,"<a href=\"Http\/Resources\/TransferItemResource.php.html#18\">App\\Http\\Resources\\TransferItemResource<\/a>"],[0,1,"<a href=\"Http\/Resources\/TransferResource.php.html#17\">App\\Http\\Resources\\TransferResource<\/a>"],[100,1,"<a href=\"Http\/Resources\/WarehouseResource.php.html#13\">App\\Http\\Resources\\WarehouseResource<\/a>"],[100,0,"<a href=\"Models\/Customer.php.html#18\">App\\Models\\Customer<\/a>"],[100,3,"<a href=\"Models\/Order.php.html#27\">App\\Models\\Order<\/a>"],[50,2,"<a href=\"Models\/OrderItem.php.html#22\">App\\Models\\OrderItem<\/a>"],[0,1,"<a href=\"Models\/Product.php.html#20\">App\\Models\\Product<\/a>"],[62.5,5,"<a href=\"Models\/Stock.php.html#18\">App\\Models\\Stock<\/a>"],[0,3,"<a href=\"Models\/StockMovement.php.html#27\">App\\Models\\StockMovement<\/a>"],[100,2,"<a href=\"Models\/Supply.php.html#22\">App\\Models\\Supply<\/a>"],[50,2,"<a href=\"Models\/SupplyItem.php.html#22\">App\\Models\\SupplyItem<\/a>"],[33.33333333333333,3,"<a href=\"Models\/Transfer.php.html#24\">App\\Models\\Transfer<\/a>"],[0,2,"<a href=\"Models\/TransferItem.php.html#22\">App\\Models\\TransferItem<\/a>"],[0,3,"<a href=\"Models\/Warehouse.php.html#22\">App\\Models\\Warehouse<\/a>"],[88.88888888888889,2,"<a href=\"Providers\/AppServiceProvider.php.html#10\">App\\Providers\\AppServiceProvider<\/a>"],[100,1,"<a href=\"Providers\/AuthServiceProvider.php.html#8\">App\\Providers\\AuthServiceProvider<\/a>"],[0,1,"<a href=\"Providers\/BroadcastServiceProvider.php.html#8\">App\\Providers\\BroadcastServiceProvider<\/a>"],[100,2,"<a href=\"Providers\/EventServiceProvider.php.html#10\">App\\Providers\\EventServiceProvider<\/a>"],[100,2,"<a href=\"Providers\/RouteServiceProvider.php.html#11\">App\\Providers\\RouteServiceProvider<\/a>"],[100,13,"<a href=\"Services\/OrderService.php.html#11\">App\\Services\\OrderService<\/a>"],[100,6,"<a href=\"Services\/StockService.php.html#10\">App\\Services\\StockService<\/a>"],[100,5,"<a href=\"Services\/SupplyService.php.html#8\">App\\Services\\SupplyService<\/a>"],[100,12,"<a href=\"Services\/TransferService.php.html#10\">App\\Services\\TransferService<\/a>"],[100,1,"<a href=\"Consts\/OrderStatus.php.html#5\">App\\Consts\\OrderStatus<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,5,"<a href=\"Console\/Commands\/RefreshDatabaseCommand.php.html#26\">App\\Console\\Commands\\RefreshDatabaseCommand::handle<\/a>"],[0,1,"<a href=\"Console\/Kernel.php.html#13\">App\\Console\\Kernel::schedule<\/a>"],[100,1,"<a href=\"Console\/Kernel.php.html#21\">App\\Console\\Kernel::commands<\/a>"],[100,1,"<a href=\"Exceptions\/Handler.php.html#42\">App\\Exceptions\\Handler::register<\/a>"],[0,5,"<a href=\"Http\/Controllers\/Api\/CustomerController.php.html#25\">App\\Http\\Controllers\\Api\\CustomerController::index<\/a>"],[0,1,"<a href=\"Http\/Controllers\/Api\/CustomerController.php.html#76\">App\\Http\\Controllers\\Api\\CustomerController::store<\/a>"],[0,1,"<a href=\"Http\/Controllers\/Api\/CustomerController.php.html#95\">App\\Http\\Controllers\\Api\\CustomerController::update<\/a>"],[0,4,"<a href=\"Http\/Controllers\/Api\/OrderController.php.html#31\">App\\Http\\Controllers\\Api\\OrderController::index<\/a>"],[100,2,"<a href=\"Http\/Controllers\/Api\/OrderController.php.html#73\">App\\Http\\Controllers\\Api\\OrderController::store<\/a>"],[0,2,"<a href=\"Http\/Controllers\/Api\/OrderController.php.html#99\">App\\Http\\Controllers\\Api\\OrderController::update<\/a>"],[42.857142857142854,2,"<a href=\"Http\/Controllers\/Api\/OrderController.php.html#126\">App\\Http\\Controllers\\Api\\OrderController::complete<\/a>"],[0,2,"<a href=\"Http\/Controllers\/Api\/OrderController.php.html#152\">App\\Http\\Controllers\\Api\\OrderController::cancel<\/a>"],[0,2,"<a href=\"Http\/Controllers\/Api\/OrderController.php.html#181\">App\\Http\\Controllers\\Api\\OrderController::destroy<\/a>"],[0,3,"<a href=\"Http\/Controllers\/Api\/OrderController.php.html#204\">App\\Http\\Controllers\\Api\\OrderController::restore<\/a>"],[0,1,"<a href=\"Http\/Controllers\/Api\/ProductController.php.html#21\">App\\Http\\Controllers\\Api\\ProductController::index<\/a>"],[0,3,"<a href=\"Http\/Controllers\/Api\/StockController.php.html#19\">App\\Http\\Controllers\\Api\\StockController::index<\/a>"],[0,7,"<a href=\"Http\/Controllers\/Api\/StockMovementController.php.html#23\">App\\Http\\Controllers\\Api\\StockMovementController::index<\/a>"],[0,4,"<a href=\"Http\/Controllers\/Api\/SupplyController.php.html#25\">App\\Http\\Controllers\\Api\\SupplyController::index<\/a>"],[100,1,"<a href=\"Http\/Controllers\/Api\/SupplyController.php.html#66\">App\\Http\\Controllers\\Api\\SupplyController::store<\/a>"],[0,1,"<a href=\"Http\/Controllers\/Api\/WarehouseController.php.html#29\">App\\Http\\Controllers\\Api\\WarehouseController::index<\/a>"],[0,2,"<a href=\"Http\/Controllers\/Api\/WarehouseController.php.html#50\">App\\Http\\Controllers\\Api\\WarehouseController::storeTransfer<\/a>"],[0,3,"<a href=\"Http\/Controllers\/Api\/WarehouseController.php.html#78\">App\\Http\\Controllers\\Api\\WarehouseController::stocks<\/a>"],[0,1,"<a href=\"Http\/Controllers\/Api\/WarehouseController.php.html#108\">App\\Http\\Controllers\\Api\\WarehouseController::products<\/a>"],[0,2,"<a href=\"Http\/Middleware\/Authenticate.php.html#13\">App\\Http\\Middleware\\Authenticate::redirectTo<\/a>"],[0,4,"<a href=\"Http\/Middleware\/RedirectIfAuthenticated.php.html#18\">App\\Http\\Middleware\\RedirectIfAuthenticated::handle<\/a>"],[0,1,"<a href=\"Http\/Middleware\/TrustHosts.php.html#14\">App\\Http\\Middleware\\TrustHosts::hosts<\/a>"],[0,1,"<a href=\"Http\/Requests\/CustomerIndexRequest.php.html#18\">App\\Http\\Requests\\CustomerIndexRequest::authorize<\/a>"],[0,1,"<a href=\"Http\/Requests\/CustomerIndexRequest.php.html#28\">App\\Http\\Requests\\CustomerIndexRequest::rules<\/a>"],[0,1,"<a href=\"Http\/Requests\/OrderIndexRequest.php.html#20\">App\\Http\\Requests\\OrderIndexRequest::authorize<\/a>"],[0,1,"<a href=\"Http\/Requests\/OrderIndexRequest.php.html#30\">App\\Http\\Requests\\OrderIndexRequest::rules<\/a>"],[0,1,"<a href=\"Http\/Requests\/StockIndexRequest.php.html#12\">App\\Http\\Requests\\StockIndexRequest::authorize<\/a>"],[0,1,"<a href=\"Http\/Requests\/StockIndexRequest.php.html#20\">App\\Http\\Requests\\StockIndexRequest::rules<\/a>"],[0,1,"<a href=\"Http\/Requests\/StockIndexRequest.php.html#34\">App\\Http\\Requests\\StockIndexRequest::messages<\/a>"],[0,1,"<a href=\"Http\/Requests\/StockMovementIndexRequest.php.html#18\">App\\Http\\Requests\\StockMovementIndexRequest::authorize<\/a>"],[0,1,"<a href=\"Http\/Requests\/StockMovementIndexRequest.php.html#28\">App\\Http\\Requests\\StockMovementIndexRequest::rules<\/a>"],[0,1,"<a href=\"Http\/Requests\/StoreCustomerRequest.php.html#18\">App\\Http\\Requests\\StoreCustomerRequest::authorize<\/a>"],[0,1,"<a href=\"Http\/Requests\/StoreCustomerRequest.php.html#28\">App\\Http\\Requests\\StoreCustomerRequest::rules<\/a>"],[0,1,"<a href=\"Http\/Requests\/StoreCustomerRequest.php.html#42\">App\\Http\\Requests\\StoreCustomerRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreOrderRequest.php.html#19\">App\\Http\\Requests\\StoreOrderRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreOrderRequest.php.html#29\">App\\Http\\Requests\\StoreOrderRequest::rules<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreOrderRequest.php.html#55\">App\\Http\\Requests\\StoreOrderRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreSupplyRequest.php.html#19\">App\\Http\\Requests\\StoreSupplyRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreSupplyRequest.php.html#29\">App\\Http\\Requests\\StoreSupplyRequest::rules<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreSupplyRequest.php.html#52\">App\\Http\\Requests\\StoreSupplyRequest::messages<\/a>"],[0,1,"<a href=\"Http\/Requests\/StoreTransferRequest.php.html#19\">App\\Http\\Requests\\StoreTransferRequest::authorize<\/a>"],[0,1,"<a href=\"Http\/Requests\/StoreTransferRequest.php.html#29\">App\\Http\\Requests\\StoreTransferRequest::rules<\/a>"],[0,1,"<a href=\"Http\/Requests\/StoreTransferRequest.php.html#54\">App\\Http\\Requests\\StoreTransferRequest::messages<\/a>"],[0,1,"<a href=\"Http\/Requests\/SupplyIndexRequest.php.html#18\">App\\Http\\Requests\\SupplyIndexRequest::authorize<\/a>"],[0,1,"<a href=\"Http\/Requests\/SupplyIndexRequest.php.html#28\">App\\Http\\Requests\\SupplyIndexRequest::rules<\/a>"],[0,1,"<a href=\"Http\/Requests\/UpdateCustomerRequest.php.html#18\">App\\Http\\Requests\\UpdateCustomerRequest::authorize<\/a>"],[0,1,"<a href=\"Http\/Requests\/UpdateCustomerRequest.php.html#28\">App\\Http\\Requests\\UpdateCustomerRequest::rules<\/a>"],[0,1,"<a href=\"Http\/Requests\/UpdateCustomerRequest.php.html#44\">App\\Http\\Requests\\UpdateCustomerRequest::messages<\/a>"],[0,1,"<a href=\"Http\/Requests\/UpdateOrderRequest.php.html#18\">App\\Http\\Requests\\UpdateOrderRequest::authorize<\/a>"],[0,1,"<a href=\"Http\/Requests\/UpdateOrderRequest.php.html#28\">App\\Http\\Requests\\UpdateOrderRequest::rules<\/a>"],[100,1,"<a href=\"Http\/Resources\/CustomerResource.php.html#20\">App\\Http\\Resources\\CustomerResource::toArray<\/a>"],[100,1,"<a href=\"Http\/Resources\/OrderItemResource.php.html#20\">App\\Http\\Resources\\OrderItemResource::toArray<\/a>"],[100,1,"<a href=\"Http\/Resources\/OrderResource.php.html#21\">App\\Http\\Resources\\OrderResource::toArray<\/a>"],[0,1,"<a href=\"Http\/Resources\/ProductResource.php.html#20\">App\\Http\\Resources\\ProductResource::toArray<\/a>"],[0,1,"<a href=\"Http\/Resources\/StockMovementResource.php.html#20\">App\\Http\\Resources\\StockMovementResource::toArray<\/a>"],[0,1,"<a href=\"Http\/Resources\/StockResource.php.html#15\">App\\Http\\Resources\\StockResource::toArray<\/a>"],[100,1,"<a href=\"Http\/Resources\/SupplyItemResource.php.html#20\">App\\Http\\Resources\\SupplyItemResource::toArray<\/a>"],[100,1,"<a href=\"Http\/Resources\/SupplyResource.php.html#21\">App\\Http\\Resources\\SupplyResource::toArray<\/a>"],[0,1,"<a href=\"Http\/Resources\/TransferItemResource.php.html#25\">App\\Http\\Resources\\TransferItemResource::toArray<\/a>"],[0,1,"<a href=\"Http\/Resources\/TransferResource.php.html#24\">App\\Http\\Resources\\TransferResource::toArray<\/a>"],[100,1,"<a href=\"Http\/Resources\/WarehouseResource.php.html#21\">App\\Http\\Resources\\WarehouseResource::toArray<\/a>"],[100,1,"<a href=\"Models\/Order.php.html#72\">App\\Models\\Order::customer<\/a>"],[100,1,"<a href=\"Models\/Order.php.html#83\">App\\Models\\Order::warehouse<\/a>"],[100,1,"<a href=\"Models\/Order.php.html#94\">App\\Models\\Order::items<\/a>"],[0,1,"<a href=\"Models\/OrderItem.php.html#62\">App\\Models\\OrderItem::order<\/a>"],[100,1,"<a href=\"Models\/OrderItem.php.html#73\">App\\Models\\OrderItem::product<\/a>"],[0,1,"<a href=\"Models\/Product.php.html#60\">App\\Models\\Product::warehouses<\/a>"],[0,1,"<a href=\"Models\/Stock.php.html#58\">App\\Models\\Stock::product<\/a>"],[0,1,"<a href=\"Models\/Stock.php.html#66\">App\\Models\\Stock::warehouse<\/a>"],[83.33333333333334,3,"<a href=\"Models\/Stock.php.html#78\">App\\Models\\Stock::setKeysForSaveQuery<\/a>"],[0,1,"<a href=\"Models\/StockMovement.php.html#72\">App\\Models\\StockMovement::doc<\/a>"],[0,1,"<a href=\"Models\/StockMovement.php.html#83\">App\\Models\\StockMovement::warehouse<\/a>"],[0,1,"<a href=\"Models\/StockMovement.php.html#94\">App\\Models\\StockMovement::product<\/a>"],[100,1,"<a href=\"Models\/Supply.php.html#61\">App\\Models\\Supply::warehouse<\/a>"],[100,1,"<a href=\"Models\/Supply.php.html#72\">App\\Models\\Supply::items<\/a>"],[0,1,"<a href=\"Models\/SupplyItem.php.html#62\">App\\Models\\SupplyItem::supply<\/a>"],[100,1,"<a href=\"Models\/SupplyItem.php.html#73\">App\\Models\\SupplyItem::product<\/a>"],[0,1,"<a href=\"Models\/Transfer.php.html#64\">App\\Models\\Transfer::fromWarehouse<\/a>"],[0,1,"<a href=\"Models\/Transfer.php.html#75\">App\\Models\\Transfer::toWarehouse<\/a>"],[100,1,"<a href=\"Models\/Transfer.php.html#86\">App\\Models\\Transfer::items<\/a>"],[0,1,"<a href=\"Models\/TransferItem.php.html#62\">App\\Models\\TransferItem::transfer<\/a>"],[0,1,"<a href=\"Models\/TransferItem.php.html#73\">App\\Models\\TransferItem::product<\/a>"],[0,1,"<a href=\"Models\/Warehouse.php.html#50\">App\\Models\\Warehouse::orders<\/a>"],[0,1,"<a href=\"Models\/Warehouse.php.html#62\">App\\Models\\Warehouse::products<\/a>"],[0,1,"<a href=\"Models\/Warehouse.php.html#74\">App\\Models\\Warehouse::supplies<\/a>"],[100,1,"<a href=\"Providers\/AppServiceProvider.php.html#15\">App\\Providers\\AppServiceProvider::register<\/a>"],[87.5,1,"<a href=\"Providers\/AppServiceProvider.php.html#24\">App\\Providers\\AppServiceProvider::boot<\/a>"],[100,1,"<a href=\"Providers\/AuthServiceProvider.php.html#22\">App\\Providers\\AuthServiceProvider::boot<\/a>"],[0,1,"<a href=\"Providers\/BroadcastServiceProvider.php.html#13\">App\\Providers\\BroadcastServiceProvider::boot<\/a>"],[100,1,"<a href=\"Providers\/EventServiceProvider.php.html#26\">App\\Providers\\EventServiceProvider::boot<\/a>"],[100,1,"<a href=\"Providers\/EventServiceProvider.php.html#34\">App\\Providers\\EventServiceProvider::shouldDiscoverEvents<\/a>"],[100,2,"<a href=\"Providers\/RouteServiceProvider.php.html#25\">App\\Providers\\RouteServiceProvider::boot<\/a>"],[100,1,"<a href=\"Services\/OrderService.php.html#15\">App\\Services\\OrderService::__construct<\/a>"],[100,1,"<a href=\"Services\/OrderService.php.html#27\">App\\Services\\OrderService::create<\/a>"],[100,4,"<a href=\"Services\/OrderService.php.html#59\">App\\Services\\OrderService::update<\/a>"],[100,4,"<a href=\"Services\/OrderService.php.html#94\">App\\Services\\OrderService::validateStockAvailability<\/a>"],[100,3,"<a href=\"Services\/OrderService.php.html#121\">App\\Services\\OrderService::complete<\/a>"],[100,4,"<a href=\"Services\/StockService.php.html#17\">App\\Services\\StockService::decrementStock<\/a>"],[100,1,"<a href=\"Services\/StockService.php.html#41\">App\\Services\\StockService::incrementStock<\/a>"],[100,1,"<a href=\"Services\/StockService.php.html#58\">App\\Services\\StockService::recordMovement<\/a>"],[100,1,"<a href=\"Services\/SupplyService.php.html#12\">App\\Services\\SupplyService::__construct<\/a>"],[100,1,"<a href=\"Services\/SupplyService.php.html#25\">App\\Services\\SupplyService::createAndExecute<\/a>"],[100,1,"<a href=\"Services\/SupplyService.php.html#46\">App\\Services\\SupplyService::createSupplyDocument<\/a>"],[100,2,"<a href=\"Services\/SupplyService.php.html#61\">App\\Services\\SupplyService::processSupplyItems<\/a>"],[100,1,"<a href=\"Services\/TransferService.php.html#14\">App\\Services\\TransferService::__construct<\/a>"],[100,1,"<a href=\"Services\/TransferService.php.html#26\">App\\Services\\TransferService::createAndExecute<\/a>"],[100,4,"<a href=\"Services\/TransferService.php.html#52\">App\\Services\\TransferService::validateStockAvailability<\/a>"],[100,2,"<a href=\"Services\/TransferService.php.html#81\">App\\Services\\TransferService::getLockedPhysicalStock<\/a>"],[100,1,"<a href=\"Services\/TransferService.php.html#98\">App\\Services\\TransferService::getReservedStock<\/a>"],[100,1,"<a href=\"Services\/TransferService.php.html#115\">App\\Services\\TransferService::createTransferDocument<\/a>"],[100,2,"<a href=\"Services\/TransferService.php.html#131\">App\\Services\\TransferService::processTransferItems<\/a>"],[100,1,"<a href=\"Consts\/OrderStatus.php.html#14\">App\\Consts\\OrderStatus::values<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

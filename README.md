@@ -52,3 +52,8 @@ npm install
 php artisan migrate:fresh --seed
 
 ```
+
+### Кастомная команда, для обновления и заполнения бд
+```bash
+ php artisan app:db-refresh
+```

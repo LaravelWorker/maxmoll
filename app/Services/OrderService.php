@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-    protected TransferService $transferService;
+    protected StockService $stockService;
 
-    public function __construct(TransferService $transferService)
+    public function __construct(StockService $stockService)
     {
-        $this->transferService = $transferService;
+        $this->stockService = $stockService;
     }
 
     /**
@@ -105,14 +105,14 @@ class OrderService
 
             // Проверяем, достаточно ли товара на складе
             if ($availableStock < $requestedCount) {
-                throw new \Exception("Недостаточно товара " . Product::find($stock->product_id ?? $item['product_id'])->name . ". Доступно: {$availableStock}, требуется: {$requestedCount}.");
+                $productName = Product::find($productId)?->name ?? "ID {$productId}";
+                throw new \Exception("Недостаточно товара {$productName}. Доступно: {$availableStock}, требуется: {$requestedCount}.");
             }
         }
     }
 
     /**
-     * Завершить заказ: проверить остатки, заблокировать строки, 
-     * списать товары, зафиксировать движение и обновить статус.
+     * Завершить заказ и списать товары.
      *
      * @param Order $order
      * @return Order
@@ -120,43 +120,20 @@ class OrderService
      */
     public function complete(Order $order): Order
     {
-        // Разрешено завершать только активные заказы
         if ($order->status !== OrderStatus::ACTIVE) {
             throw new \Exception('Завершить можно только заказ в статусе "active".');
         }
 
         return DB::transaction(function () use ($order) {
             foreach ($order->items as $item) {
-                // Блокируем запись остатка для безопасного обновления
-                $stock = Stock::where('product_id', $item->product_id)
-                    ->where('warehouse_id', $order->warehouse_id)
-                    ->lockForUpdate()
-                    ->first();
-
-                $available = $stock ? $stock->stock : 0;
-
-                // Если остатков недостаточно — прерываем с ошибкой
-                if (!$stock || $available < $item->count) {
-                    throw new \Exception("Недостаточно товара (ID: {$item->product_name}) на складе. В наличии: {$available}, требуется: {$item->count}");
-                }
-
-                // 1. Уменьшаем остаток в таблице stocks через централизованный метод
-                $this->transferService->changeStock(
+                $this->stockService->decrementStock(
                     $order->warehouse_id,
                     $item->product_id,
-                    -$item->count
-                );
-
-                // 2. Фиксируем списание в журнале истории
-                $this->transferService->recordMovement(
-                    $order->warehouse_id,
-                    $item->product_id,
-                    -$item->count,
+                    $item->count,
                     $order
                 );
             }
 
-            // Отмечаем заказ как выполненный и записываем время выполнения
             $order->update([
                 'status'       => OrderStatus::COMPLETED->value,
                 'completed_at' => now(),

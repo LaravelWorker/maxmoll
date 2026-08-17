@@ -2,14 +2,20 @@
 
 namespace App\Services;
 
+use App\Consts\OrderStatus;
 use App\Models\Stock;
-use App\Models\StockMovement;
 use App\Models\Transfer;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class TransferService
 {
+    protected StockService $stockService;
+
+    public function __construct(StockService $stockService)
+    {
+        $this->stockService = $stockService;
+    }
+
     /**
      * Создать и провести документ перемещения со всеми позициями.
      *
@@ -95,7 +101,7 @@ class TransferService
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->where('orders.warehouse_id', $warehouseId)
             ->where('order_items.product_id', $productId)
-            ->where('orders.status', ['active'])
+            ->where('orders.status', OrderStatus::ACTIVE->value)
             ->sum('order_items.count');
     }
 
@@ -135,59 +141,10 @@ class TransferService
             ]);
 
             // Списание со склада-отправителя
-            $this->recordMovement($transfer->from_warehouse_id, $productId, -$count, $transfer);
-            $this->changeStock($transfer->from_warehouse_id, $productId, -$count);
+            $this->stockService->decrementStock($transfer->from_warehouse_id, $productId, $count, $transfer);
 
             // Зачисление на склад-получатель
-            $this->recordMovement($transfer->to_warehouse_id, $productId, $count, $transfer);
-            $this->changeStock($transfer->to_warehouse_id, $productId, $count);
-        }
-    }
-
-    /**
-     * Записать движение товара в журнал.
-     *
-     * @param int $warehouseId
-     * @param int $productId
-     * @param int $quantity
-     * @param Model $model
-     * @return StockMovement
-     */
-    public function recordMovement(int $warehouseId, int $productId, int $quantity, Model $model): StockMovement
-    {
-        return StockMovement::create([
-            'warehouse_id' => $warehouseId,
-            'product_id'   => $productId,
-            'quantity'     => $quantity,
-            'doc_type'     => $model::class,
-            'doc_id'       => $model->id,
-            'created_at'   => $model->created_at,
-        ]);
-    }
-
-    /**
-     * Изменение остатка товара на конкретном складе в таблице stocks.
-     *
-     * @param int $warehouseId
-     * @param int $productId
-     * @param int $delta
-     * @return void
-     */
-    public function changeStock(int $warehouseId, int $productId, int $delta): void
-    {
-        $stock = Stock::where('warehouse_id', $warehouseId)
-            ->where('product_id', $productId)
-            ->first();
-
-        if ($stock) {
-            $stock->stock += $delta;
-            $stock->save();
-        } else {
-            Stock::create([
-                'warehouse_id' => $warehouseId,
-                'product_id'   => $productId,
-                'stock'        => max(0, $delta),
-            ]);
+            $this->stockService->incrementStock($transfer->to_warehouse_id, $productId, $count, $transfer);
         }
     }
 }

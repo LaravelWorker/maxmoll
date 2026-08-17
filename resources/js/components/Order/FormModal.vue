@@ -62,19 +62,6 @@
           >
             + Добавить товар
           </button>
-
-          <!-- Кнопки Смены Статуса (для существующего активного заказа) -->
-          <div v-if="isEdit && form.status === 'active'" class="border-top pt-3 mt-4">
-            <h6 class="mb-2">Действия со статусом:</h6>
-            <div class="d-flex gap-2">
-              <button class="btn btn-success" @click="completeOrder" :disabled="saving">
-                ✅ Завершить заказ (списать со склада)
-              </button>
-              <button class="btn btn-danger" @click="cancelOrder" :disabled="saving">
-                🚫 Отменить заказ
-              </button>
-            </div>
-          </div>
         </div>
 
         <div class="modal-footer">
@@ -152,33 +139,6 @@ const saveOrder = async () => {
   }
 };
 
-const completeOrder = async () => {
-  if (!confirm('Вы уверены, что хотите завершить заказ? Товары будут списаны со склада.')) return;
-  saving.value = true;
-  errorMessage.value = '';
-  try {
-    await axios.post(`/api/orders/${props.order.id}/complete`);
-    emit('saved');
-  } catch (err) {
-    errorMessage.value = err.response?.data?.message || 'Ошибка завершения заказа';
-  } finally {
-    saving.value = false;
-  }
-};
-
-const cancelOrder = async () => {
-  if (!confirm('Отменить заказ?')) return;
-  saving.value = true;
-  errorMessage.value = '';
-  try {
-    await axios.post(`/api/orders/${props.order.id}/cancel`);
-    emit('saved');
-  } catch (err) {
-    errorMessage.value = err.response?.data?.message || 'Ошибка отмены заказа';
-  } finally {
-    saving.value = false;
-  }
-};
 
 onMounted(() => loadDictionaries());
 </script>

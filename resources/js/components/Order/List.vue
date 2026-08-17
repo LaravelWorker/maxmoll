@@ -37,9 +37,9 @@
             <label class="form-label small fw-bold">Статус</label>
             <select v-model="filters.status" class="form-select form-select-sm" @change="fetchOrders(1)">
               <option value="">Все статусы</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-              <option value="canceled">Canceled</option>
+              <option value="active">Активен</option>
+              <option value="completed">Завершен</option>
+              <option value="canceled">Отменен</option>
             </select>
           </div>
 
@@ -93,14 +93,13 @@
               <td>{{ order.customer?.name || '—' }}</td>
               <td>{{ order.warehouse?.name || '—' }}</td>
               <td>
-                <!-- Полный состав заказа -->
                 <div v-if="order.items && order.items.length" class="py-1">
                   <div 
                     v-for="item in order.items" 
                     :key="item.id || item.product_id" 
                     class="small text-nowrap"
                   >
-                    • {{ `${item.product_name}` }} 
+                    • {{ item.product_name }} 
                     <span class="fw-bold text-secondary">({{ item.count }} шт.)</span>
                   </div>
                 </div>
@@ -108,23 +107,60 @@
               </td>
               <td>
                 <span :class="getStatusBadgeClass(order.status)" class="badge">
-                  {{ order.status }}
+                  {{ getStatusLabel(order.status) }}
                 </span>
               </td>
               <td>{{ order.created_at }}</td>
               <td class="text-end">
-                <div v-if="order.status == 'active'" class="btn-group">
-                  <button class="btn btn-sm btn-outline-primary me-1" @click="openEditModal(order)">
-                    Редактировать
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger me-1" @click="cancelOrder(order)">
-                    Удалить
-                  </button>
-                </div>
+                <!-- Единая панель кнопок действий -->
+                <div class="btn-group btn-group-sm" role="group">
+                  <!-- Действия для АКТИВНОГО заказа -->
+                  <template v-if="order.status === 'active'">
+                    <button 
+                      class="btn btn-outline-primary" 
+                      title="Редактировать"
+                      @click="openEditModal(order)"
+                    >
+                      ✏️ Редактировать
+                    </button>
+                    <button 
+                      class="btn btn-outline-success" 
+                      title="Завершить и списать со склада"
+                      @click="completeOrder(order)"
+                    >
+                      ✅ Завершить
+                    </button>
+                    <button 
+                      class="btn btn-outline-danger" 
+                      title="Отменить заказ"
+                      @click="cancelOrder(order)"
+                    >
+                      🚫 Отменить
+                    </button>
+                  </template>
 
-                <button v-if="order.status == 'canceled'" class="btn btn-sm btn-outline-success me-1" @click="restoreOrder(order)">
-                  🔄 Возобновить
-                </button>
+                  <!-- Действия для ОТМЕНЕННОГО заказа -->
+                  <template v-else-if="order.status === 'canceled'">
+                    <button 
+                      class="btn btn-outline-success" 
+                      title="Возобновить заказ"
+                      @click="restoreOrder(order)"
+                    >
+                      🔄 Возобновить
+                    </button>
+                  </template>
+
+                  <!-- Действия для ЗАВЕРШЕННОГО заказа -->
+                  <template v-else-if="order.status === 'completed'">
+                    <button 
+                      class="btn btn-outline-secondary" 
+                      title="Просмотр деталей"
+                      @click="openEditModal(order)"
+                    >
+                      👁️ Просмотр
+                    </button>
+                  </template>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -135,6 +171,7 @@
     <!-- Пагинация -->
     <div class="d-flex justify-content-between align-items-center mt-3" v-if="pagination.total > 0">
       <div class="text-muted small">
+        Показано {{ pagination.from || 0 }}–{{ pagination.to || 0 }} из {{ pagination.total }} заказов
       </div>
       <ul class="pagination pagination-sm m-0">
         <li class="page-item" :class="{ disabled: !pagination.prev }">
@@ -186,16 +223,13 @@ const pagination = ref({
   next: null,
 });
 
-const restoreOrder = async (order) => {
-  if (!confirm(`Вы действительно хотите возобновить заказ #${order.id}?`)) return;
-  
-  try {
-    await axios.post(`/api/orders/${order.id}/restore`);
-    fetchOrders(pagination.value.currentPage);
-  } catch (err) {
-    alert(err.response?.data?.message || 'Ошибка возобновления заказа');
-  }
+const statusLabels = {
+  active: 'Активен',
+  completed: 'Завершен',
+  canceled: 'Отменен',
 };
+
+const getStatusLabel = (status) => statusLabels[status] || status;
 
 const fetchOrders = async (page = 1) => {
   loading.value = true;
@@ -232,9 +266,7 @@ const debouncedFetchOrders = () => {
   }, 300);
 };
 
-const changePerPage = () => {
-  fetchOrders(1);
-};
+const changePerPage = () => fetchOrders(1);
 
 const resetFilters = () => {
   filters.customer_search = '';
@@ -263,14 +295,39 @@ const openEditModal = (order) => {
   showModal.value = true;
 };
 
-const cancelOrder = async (order) => {
-  if (!confirm(`Вы действительно хотите удалить заказ #${order.id}?`)) return;
+// Завершить заказ (списать товары)
+const completeOrder = async (order) => {
+  if (!confirm(`Завершить заказ #${order.id}? Товары будут списаны со склада.`)) return;
 
   try {
-    await axios.post(`/api/orders/${order.id}/destroy`);
+    await axios.post(`/api/orders/${order.id}/complete`);
     fetchOrders(pagination.value.currentPage);
   } catch (err) {
-    alert(err.response?.data?.message || 'Ошибка удаления заказа');
+    alert(err.response?.data?.message || 'Ошибка при завершении заказа');
+  }
+};
+
+// Отменить заказ
+const cancelOrder = async (order) => {
+  if (!confirm(`Вы действительно хотите отменить заказ #${order.id}?`)) return;
+
+  try {
+    await axios.post(`/api/orders/${order.id}/cancel`);
+    fetchOrders(pagination.value.currentPage);
+  } catch (err) {
+    alert(err.response?.data?.message || 'Ошибка отмены заказа');
+  }
+};
+
+// Возобновить отмененный заказ
+const restoreOrder = async (order) => {
+  if (!confirm(`Вы действительно хотите возобновить заказ #${order.id}?`)) return;
+
+  try {
+    await axios.post(`/api/orders/${order.id}/restore`);
+    fetchOrders(pagination.value.currentPage);
+  } catch (err) {
+    alert(err.response?.data?.message || 'Ошибка возобновления заказа');
   }
 };
 

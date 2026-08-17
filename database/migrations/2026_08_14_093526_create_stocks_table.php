@@ -2,47 +2,58 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     /**
-     * Метод создает структуру базы данных для таблицы 'stocks' (складские остатки), 
-     * реализующую связь Many-to-Many между товарами и складами с хранением текущего количества 
-     * каждого товара на конкретном складе.
+     * Выполнение миграции: создание таблицы 'stocks' (складские остатки).
+     *
+     * Таблица связывает товары (products) и склады (warehouses) с хранением текущего остатка.
+     * Используется автоинкрементный ID для совместимости с Eloquent, уникальный составной индекс
+     * для исключения дубликатов пар (warehouse_id, product_id) и CHECK-ограничение для защиты от отрицательных остатков.
      *
      * @return void
      */
     public function up(): void
     {
-        // Создаем новую таблицу 'stocks'
         Schema::create('stocks', function (Blueprint $table) {
-            // Внешний ключ на таблицу товаров ('products'). 
-            // При удалении товара каскадно удаляется связанная запись об остатках.
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
-            
-            // Внешний ключ на таблицу складов ('warehouses'). 
-            // При удалении склада каскадно удаляются все остатки, привязанные к нему.
-            $table->foreignId('warehouse_id')->constrained('warehouses')->cascadeOnDelete();
-            
-            // Текущее количество товара на данном складе
-            $table->integer('stock');
+            // Первичный ключ таблицы (необходим для работы $stock->id в StockService и StockResource)
+            $table->id();
 
-            // Составной первичный ключ по требованию ТЗ. 
-            // Гарантирует уникальность пары товар-склад и оптимизирует поисковые запросы по остаткам.
-            $table->primary(['product_id', 'warehouse_id']);
+            // Внешний ключ на таблицу товаров ('products'). При удалении товара каскадно удаляются его остатки
+            $table->foreignId('product_id')
+                ->constrained('products')
+                ->cascadeOnDelete();
+
+            // Внешний ключ на таблицу складов ('warehouses'). При удалении склада каскадно удаляются связанные остатки
+            $table->foreignId('warehouse_id')
+                ->constrained('warehouses')
+                ->cascadeOnDelete();
+
+            // Текущий физический остаток товара на данном складе
+            $table->integer('stock')->default(0);
+
+            // Метки времени создания и обновления записи (используются в StockResource)
+            $table->timestamps();
+
+            // Составной уникальный индекс: гарантирует, что для одной пары (склад + товар) существует строго одна запись
+            $table->unique(['warehouse_id', 'product_id'], 'unique_warehouse_product');
         });
+
+        // Блокирует попытки записать отрицательный остаток на уровне СУБД
+        DB::statement('ALTER TABLE stocks ADD CONSTRAINT check_stock_positive CHECK (stock >= 0)');
     }
 
     /**
-     * Метод вызывается при отмене (rollback) миграций и удаляет таблицу 'stocks', 
-     * полностью очищая информацию об остатках товаров на складах.
+     * Откат миграции: удаление таблицы 'stocks'.
      *
      * @return void
      */
     public function down(): void
     {
-        // Безопасное удаление таблицы: выполняется только в том случае, если она физически существует в БД
+        // Безопасное удаление таблицы вместе с ее индексами и ограничениями
         Schema::dropIfExists('stocks');
     }
 };

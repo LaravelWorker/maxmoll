@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Consts\OrderStatus;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Warehouse;
@@ -30,7 +31,7 @@ class OrderFactory extends Factory
         return [
             'customer_id' => Customer::factory(),
             'warehouse_id' => Warehouse::factory(),
-            'status' => 'active',
+            'status' => OrderStatus::ACTIVE->value,
             'created_at' => now(),
         ];
     }

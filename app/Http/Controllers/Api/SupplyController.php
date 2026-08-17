@@ -65,7 +65,6 @@ class SupplyController extends Controller
      */
     public function store(StoreSupplyRequest $request, SupplyService $supplyService): SupplyResource
     {
-        // Выполняем бизнес-логику создания и проведения через сервисный слой
         $supply = $supplyService->createAndExecute($request->validated());
 
         // Подгружаем актуальные связи для формирования корректного ответа клиенту

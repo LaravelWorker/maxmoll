@@ -4,14 +4,11 @@ namespace Database\Seeders;
 
 use App\Consts\OrderStatus;
 use App\Models\Customer;
-use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Stock;
-use App\Models\StockMovement;
-use App\Models\Supply;
-use App\Models\SupplyItem;
 use App\Models\Warehouse;
+use App\Services\OrderService;
+use App\Services\SupplyService;
 use App\Services\TransferService;
 use Illuminate\Database\Seeder;
 
@@ -20,128 +17,104 @@ class DatabaseSeeder extends Seeder
     /**
      * Запуск наполнения базы данных тестовыми данными.
      *
+     * @param SupplyService $supplyService
+     * @param TransferService $transferService
+     * @param OrderService $orderService
      * @return void
      */
-    public function run(): void
-    {
-        $transferService = new TransferService();
-
-        // 1. Создаем основные сущности
+    public function run(
+        SupplyService $supplyService,
+        TransferService $transferService,
+        OrderService $orderService
+    ): void {
+        // 1. Создаем базовые справочники
         $products = Product::factory(20)->create();
         $customers = Customer::factory(10)->create();
         $warehouses = Warehouse::factory(4)->create();
 
-        // 2. Генерируем остатки на складах (stocks) с запасом, чтобы хватало на перемещения
+        // 2. Создаем начальные складские остатки (базовый баланс)
         foreach ($warehouses as $warehouse) {
             foreach ($products->random(15) as $product) {
                 Stock::create([
-                    'product_id' => $product->id,
                     'warehouse_id' => $warehouse->id,
-                    'stock' => rand(200, 1000), // Увеличиваем начальный объем для тестов
+                    'product_id'   => $product->id,
+                    'stock'        => rand(200, 1000),
                 ]);
             }
         }
 
-        // 3. Генерируем поставки (supplies + supply_items + stock_movements)
+        // 3. Генерируем поставки через SupplyService (автоматически создает Supply, SupplyItem, движения и пополняет stock)
         foreach ($warehouses as $warehouse) {
-            $supplies = Supply::factory(3)->create([
-                'warehouse_id' => $warehouse->id,
-            ]);
-
-            foreach ($supplies as $supply) {
-                $randomProducts = $products->random(rand(2, 5));
-                foreach ($randomProducts as $product) {
-                    $count = rand(50, 200);
-
-                    SupplyItem::create([
-                        'supply_id' => $supply->id,
+            for ($i = 0; $i < 3; $i++) {
+                $items = [];
+                foreach ($products->random(rand(2, 5)) as $product) {
+                    $items[] = [
                         'product_id' => $product->id,
-                        'count' => $count,
-                    ]);
-
-                    // Фиксируем движение товара (приход)
-                    StockMovement::create([
-                        'warehouse_id' => $warehouse->id,
-                        'product_id' => $product->id,
-                        'quantity' => $count,
-                        'doc_type' => Supply::class,
-                        'doc_id' => $supply->id,
-                        'created_at' => $supply->created_at,
-                    ]);
-
-                    // Пополняем остаток в таблице stocks
-                    $transferService->changeStock($warehouse->id, $product->id, $count);
+                        'count'      => rand(50, 200),
+                    ];
                 }
+
+                $supplyService->createAndExecute([
+                    'warehouse_id' => $warehouse->id,
+                    'items'        => $items,
+                ]);
             }
         }
 
-        // 4. Генерируем заказы (orders + order_items + stock_movements)
+        // 4. Генерируем заказы через OrderService
         foreach ($customers as $customer) {
-            $orders = Order::factory(3)->create([
-                'customer_id' => $customer->id,
-                'warehouse_id' => $warehouses->random()->id,
-                'status' => fake()->randomElement(OrderStatus::values()),
-                'created_at' => fake()->dateTimeBetween('-1 month', 'now'),
-            ]);
+            for ($i = 0; $i < 3; $i++) {
+                $warehouse = $warehouses->random();
+                $items = [];
 
-            foreach ($orders as $order) {
-                $randomProducts = $products->random(rand(1, 4));
-                foreach ($randomProducts as $product) {
-                    $count = rand(1, 5);
-
-                    OrderItem::create([
-                        'order_id' => $order->id,
+                foreach ($products->random(rand(1, 4)) as $product) {
+                    $items[] = [
                         'product_id' => $product->id,
-                        'count' => $count,
-                    ]);
-
-                    // Если заказ завершен сразу при сидинге, списываем со склада и пишем движение
-                    if ($order->status === OrderStatus::COMPLETED) {
-                        StockMovement::create([
-                            'warehouse_id' => $order->warehouse_id,
-                            'product_id' => $product->id,
-                            'quantity' => -$count,
-                            'doc_type' => Order::class,
-                            'doc_id' => $order->id,
-                            'created_at' => $order->created_at,
-                        ]);
-
-                        $transferService->changeStock($order->warehouse_id, $product->id, -$count);
-                    }
+                        'count'      => rand(1, 5),
+                    ];
                 }
 
-                if ($order->status === OrderStatus::COMPLETED) {
-                    $order->update(['completed_at' => now()]);
+                try {
+                    // Создаем активный заказ
+                    $order = $orderService->create([
+                        'customer_id'  => $customer->id,
+                        'warehouse_id' => $warehouse->id,
+                        'items'        => $items,
+                    ]);
+
+                    // Часть заказов завершаем с помощью бизнес-логики сервиса (атомарное списание + аудит)
+                    if (fake()->boolean(60)) {
+                        $orderService->complete($order);
+                    } elseif (fake()->boolean(30)) {
+                        // Часть заказов отменяем
+                        $order->update(['status' => OrderStatus::CANCELED->value]);
+                    }
+                } catch (\Throwable $e) {
+                    // Пропускаем в случае нехватки товара
+                    continue;
                 }
             }
         }
 
-        // 5. Генерируем межскладские перемещения через обновленный TransferService
-        foreach (range(1, 5) as $i) {
-            $warehouseIds = Warehouse::inRandomOrder()->limit(2)->pluck('id');
-            if ($warehouseIds->count() < 2) {
-                continue;
-            }
+        // 5. Генерируем межскладские перемещения через TransferService
+        for ($i = 0; $i < 5; $i++) {
+            $warehouseIds = $warehouses->random(2)->pluck('id');
 
-            // Формируем массив позиций для сервиса
             $items = [];
-            $randomProducts = $products->random(rand(1, 3));
-            foreach ($randomProducts as $product) {
+            foreach ($products->random(rand(1, 3)) as $product) {
                 $items[] = [
                     'product_id' => $product->id,
-                    'count' => rand(5, 15), // Небольшое количество, чтобы точно хватило остатка
+                    'count'      => rand(5, 15),
                 ];
             }
 
             try {
-                // Передаем данные в метод createAndExecute, который проверяет остатки,
-                // резервы, создает документ, проводки и обновляет таблицу stocks
                 $transferService->createAndExecute([
                     'from_warehouse_id' => $warehouseIds[0],
                     'to_warehouse_id'   => $warehouseIds[1],
                     'items'             => $items,
                 ]);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 continue;
             }
         }

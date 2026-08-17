@@ -2,13 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Stock;
-use App\Models\StockMovement;
 use App\Models\Supply;
 use Illuminate\Support\Facades\DB;
 
 class SupplyService
 {
+    protected StockService $stockService;
+
+    public function __construct(StockService $stockService)
+    {
+        $this->stockService = $stockService;
+    }
+
     /**
      * Создать и провести документ поставки со всеми позициями, 
      * обновить остатки и зафиксировать движения.
@@ -65,9 +70,8 @@ class SupplyService
                 'count'      => $count,
             ]);
 
-            $transferService = new TransferService();
-            $transferService->changeStock($supply->warehouse_id, $productId, $count);
-            $transferService->recordMovement($supply->warehouse_id, $productId, $count, $supply);
+            // Атомарно пополняем остаток на складе и фиксируем движение в журнале (2 в 1)
+            $this->stockService->incrementStock($supply->warehouse_id, $productId, $count, $supply);
         }
     }
 }
