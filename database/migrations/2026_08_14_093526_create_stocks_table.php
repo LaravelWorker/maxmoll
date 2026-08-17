@@ -26,7 +26,7 @@ return new class extends Migration
             $table->foreignId('warehouse_id')->constrained('warehouses')->cascadeOnDelete();
             
             // Текущее количество товара на данном складе
-            $table->unsignedInteger('stock');
+            $table->integer('stock');
 
             // Составной первичный ключ по требованию ТЗ. 
             // Гарантирует уникальность пары товар-склад и оптимизирует поисковые запросы по остаткам.
