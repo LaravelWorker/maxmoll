@@ -40,7 +40,7 @@ class StockServiceTest extends TestCase
             'warehouse_id' => $warehouse->id,
             'product_id'   => $product->id,
             'quantity'     => 50,
-            'doc_type'     => Order::class,
+            'doc_type'     => (new Order())->getMorphClass(),
             'doc_id'       => $order->id,
         ]);
     }

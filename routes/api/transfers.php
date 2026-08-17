@@ -1,12 +1,12 @@
 <?php
 
-use App\Http\Controllers\Api\WarehouseController;
+use App\Http\Controllers\Api\TransferController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Warehouse Routes (/api/warehouses)
+| Transfer Routes (/api/transfers)
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [WarehouseController::class, 'index']);
+Route::post('/', [TransferController::class, 'store']);

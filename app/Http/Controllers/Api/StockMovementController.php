@@ -7,7 +7,6 @@ use App\Http\Requests\StockMovementIndexRequest;
 use App\Http\Resources\StockMovementResource;
 use App\Models\StockMovement;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Log;
 
 class StockMovementController extends Controller
 {
@@ -43,10 +42,19 @@ class StockMovementController extends Controller
             });
         }
 
-        Log::info( $request->input('doc_type'));
         // Фильтр по типу документа
         if ($request->filled('doc_type')) {
             $query->where('doc_type', $request->input('doc_type'));
+        }
+
+        // Фильтр по началу периода
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->input('date_from'));
+        }
+
+        // Фильтр по концу периода
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->input('date_to'));
         }
 
         $perPage = $request->input('per_page', 15);

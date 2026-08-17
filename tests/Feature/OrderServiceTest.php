@@ -161,7 +161,7 @@ class OrderServiceTest extends TestCase
             'warehouse_id' => $warehouse->id,
             'product_id'   => $product->id,
             'quantity'     => -12,
-            'doc_type'     => Order::class,
+            'doc_type'     => (new Order())->getMorphClass(),
             'doc_id'       => $order->id,
         ]);
     }

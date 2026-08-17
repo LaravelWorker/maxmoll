@@ -124,25 +124,19 @@ import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import CustomerFormModal from './FormModal.vue';
 import Pagination from '../Common/Pagination.vue';
+import { usePagination } from '../Composables/usePagination';
+
+const { perPage, pagination, setMeta, debounce } = usePagination(15);
 
 const customers = ref([]);
 const loading = ref(false);
 const showModal = ref(false);
 const selectedCustomer = ref(null);
-const perPage = ref(15);
 
 const filters = reactive({
   name: '',
   email: '',
   phone: '',
-});
-
-const pagination = ref({
-  current_page: 1,
-  last_page: 1,
-  total: 0,
-  from: 0,
-  to: 0,
 });
 
 const fetchCustomers = async (page = 1) => {
@@ -156,7 +150,7 @@ const fetchCustomers = async (page = 1) => {
 
     const res = await axios.get('/api/customers', { params });
     customers.value = res.data.data;
-    pagination.value = res.data.meta;
+    setMeta(res.data.meta);
   } catch (err) {
     console.error('Ошибка при загрузке покупателей:', err);
     alert('Ошибка при загрузке покупателей');
@@ -165,13 +159,7 @@ const fetchCustomers = async (page = 1) => {
   }
 };
 
-let searchTimeout = null;
-const debouncedFetchCustomers = () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    fetchCustomers(1);
-  }, 300);
-};
+const debouncedFetchCustomers = debounce(() => fetchCustomers(1));
 
 const changePerPage = () => {
   fetchCustomers(1);

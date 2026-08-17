@@ -213,26 +213,20 @@
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import Pagination from '../Common/Pagination.vue';
+import { usePagination } from '../Composables/usePagination';
+
+const { perPage, pagination, setMeta } = usePagination(15);
 
 const supplies = ref([]);
 const warehouses = ref([]);
 const products = ref([]);
 const loading = ref(false);
 const submitting = ref(false);
-const perPage = ref(15);
 
 const filters = reactive({
   warehouse_id: '',
   date_from: '',
   date_to: '',
-});
-
-const pagination = ref({
-  current_page: 1,
-  last_page: 1,
-  total: 0,
-  from: 0,
-  to: 0,
 });
 
 const isSupplyModalOpen = ref(false);
@@ -253,13 +247,7 @@ const fetchSupplies = async (page = 1) => {
     };
     const res = await axios.get('/api/supplies', { params });
     supplies.value = res.data.data || [];
-    pagination.value = res.data.meta || {
-      current_page: 1,
-      last_page: 1,
-      total: 0,
-      from: 0,
-      to: 0,
-    };
+    setMeta(res.data.meta);
   } catch (err) {
     showNotification('Ошибка загрузки списка поставок', 'danger');
   } finally {
@@ -278,7 +266,7 @@ const fetchWarehouses = async () => {
 
 const fetchProducts = async () => {
   try {
-    const res = await axios.get('/api/warehouses/products');
+    const res = await axios.get('/api/products');
     products.value = res.data.data || res.data;
   } catch (e) {
     showNotification('Ошибка загрузки товаров', 'danger');

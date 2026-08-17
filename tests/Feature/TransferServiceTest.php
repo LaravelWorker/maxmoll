@@ -81,7 +81,7 @@ class TransferServiceTest extends TestCase
             'warehouse_id' => $fromWarehouse->id,
             'product_id'   => $product->id,
             'quantity'     => -30,
-            'doc_type'     => Transfer::class,
+            'doc_type'     => (new Transfer())->getMorphClass(),
             'doc_id'       => $transfer->id,
         ]);
 
@@ -89,7 +89,7 @@ class TransferServiceTest extends TestCase
             'warehouse_id' => $toWarehouse->id,
             'product_id'   => $product->id,
             'quantity'     => 30,
-            'doc_type'     => Transfer::class,
+            'doc_type'     => (new Transfer())->getMorphClass(),
             'doc_id'       => $transfer->id,
         ]);
     }
