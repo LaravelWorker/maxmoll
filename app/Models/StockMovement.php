@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * Модель StockMovement (движение товара / запись журнала Ledger).
+ * Модель StockMovement (движение товара / запись журнала).
  * Представляет запись об изменении остатка товара на складе с привязкой 
  * к конкретному документу-основанию (Заказ, Поставка, Перемещение).
  *
@@ -30,7 +30,7 @@ class StockMovement extends Model
 
     /**
      * Отключение поля updated_at.
-     * Записи в журнале движений (Ledger) являются неизменяемыми (immutable), 
+     * Записи в журнале движений являются неизменяемыми (immutable), 
      * поэтому обновление данных не предусмотрено.
      *
      * @var string|null

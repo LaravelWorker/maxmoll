@@ -118,7 +118,6 @@ class OrderController extends Controller
      * Завершить заказ (списание остатков со склада).
      *
      * Метод делегирует всю бизнес-логику завершения заказа в OrderService
-     * (транзакция, pessimistic locking, списание остатков, Ledger и обновление статуса).
      *
      * @param \App\Models\Order $order Заказ для завершения
      * @param \App\Services\OrderService $orderService Сервис управления заказами

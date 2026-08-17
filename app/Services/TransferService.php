@@ -29,7 +29,7 @@ class TransferService
             // 2. Создание документа перемещения
             $transfer = $this->createTransferDocument($fromWarehouseId, $toWarehouseId);
 
-            // 3. Обработка позиций, проводок в Ledger и обновление остатков
+            // 3. Обработка позиций, проводок и обновление остатков
             $this->processTransferItems($transfer, $data['items']);
 
             return $transfer;
@@ -145,7 +145,7 @@ class TransferService
     }
 
     /**
-     * Записать движение товара в журнал (Ledger).
+     * Записать движение товара в журнал.
      *
      * @param int $warehouseId
      * @param int $productId

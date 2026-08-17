@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Класс ресурса для преобразования модели StockMovement (движение товаров) в JSON-представление.
- * Отвечает за форматирование записей истории изменений складских остатков (Ledger) для выдачи через API.
+ * Отвечает за форматирование записей истории изменений складских остатков для выдачи через API.
  */
 class StockMovementResource extends JsonResource
 {

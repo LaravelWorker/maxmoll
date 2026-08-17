@@ -11,7 +11,7 @@ class SupplyService
 {
     /**
      * Создать и провести документ поставки со всеми позициями, 
-     * обновить остатки и зафиксировать движения в Ledger.
+     * обновить остатки и зафиксировать движения.
      *
      * @param array $data Валидированные данные из StoreSupplyRequest
      * @return Supply
@@ -25,7 +25,7 @@ class SupplyService
             // 1. Создание документа поставки
             $supply = $this->createSupplyDocument($warehouseId);
 
-            // 2. Обработка позиций, проводок в Ledger и обновление остатков
+            // 2. Обработка позиций, обновление остатков
             $this->processSupplyItems($supply, $data['items']);
 
             return $supply;

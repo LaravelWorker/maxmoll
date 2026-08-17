@@ -55,7 +55,7 @@ class SupplyController extends Controller
      * Создать новую поставку товаров на склад и пополнить остатки.
      *
      * Метод обрабатывает входящий запрос на поставку товаров, делегируя 
-     * всю бизнес-логику (транзакцию, создание позиций, проводки в Ledger и обновление stocks) в SupplyService.
+     * всю бизнес-логику в SupplyService.
      *
      * @param StoreSupplyRequest $request Валидированный запрос, содержащий склад и список поступающих товаров
      * @param SupplyService $supplyService Сервис проведения документов поставок

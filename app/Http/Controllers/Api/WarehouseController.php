@@ -40,7 +40,7 @@ class WarehouseController extends Controller
      * Создать и провести документ межскладского перемещения.
      *
      * Метод принимает валидированные данные из StoreTransferRequest, 
-     * передает управление сервису проведения, формирует проводки в Ledger (stock_movements)
+     * передает управление сервису проведения
      * и возвращает созданный документ в виде TransferResource.
      *
      * @param StoreTransferRequest $request
