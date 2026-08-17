@@ -37,9 +37,9 @@
             <label class="form-label small fw-bold">Статус</label>
             <select v-model="filters.status" class="form-select form-select-sm" @change="fetchOrders(1)">
               <option value="">Все статусы</option>
-              <option value="active">Активен</option> 
-              <option value="completed">Завершен</option>
-              <option value="canceled">Отменен</option>
+              <option v-for="(label, value) in statusLabels" :key="value" :value="value">
+                {{ label }}
+              </option>
             </select>
           </div>
 
@@ -191,6 +191,11 @@ import axios from 'axios';
 import OrderFormModal from './FormModal.vue';
 import Pagination from '../Common/Pagination.vue'
 import OrderStatusBadge from '../Common/OrderStatusBadge.vue'
+import { useOrderStatus } from '../Composables/useOrderStatus'
+
+// Локализованные подписи статусов берём из единого composable (единый источник правды),
+// чтобы не дублировать перевод «active/completed/canceled» в каждом компоненте.
+const { statusLabels } = useOrderStatus()
 
 const orders = ref([]);
 const loading = ref(false);
@@ -213,15 +218,6 @@ const pagination = ref({
   prev: null,
   next: null,
 });
-
-const statusLabels = {
-  active: 'Активен',
-  completed: 'Завершен',
-  canceled: 'Отменен',
-};
-
-const getStatusLabel = (status) => statusLabels[status] || status;
-
 
 const fetchOrders = async (page = 1) => {
   const response = await axios.get('/api/orders', { params: { page } })

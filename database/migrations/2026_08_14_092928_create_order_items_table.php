@@ -27,8 +27,9 @@ return new class extends Migration
             // При удалении товара из каталога связанные строки позиций заказов также будут удалены.
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             
-            // Количество единиц выбранного товара, входящего в состав заказа
-            $table->unsignedInteger('count');
+            // Количество единиц выбранного товара, входящего в состав заказа.
+            // Согласно ТЗ поле имеет тип integer (валидация min:1 выполняется в StoreOrderRequest).
+            $table->integer('count');
         });
     }
 

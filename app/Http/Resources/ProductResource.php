@@ -30,9 +30,15 @@ class ProductResource extends JsonResource
             'price'  => $this->price,
             
             // Коллекция данных об остатках товара по различным складам.
-            // Используется whenLoaded('warehouses') для предотвращения проблемы N+1 запросов:
-            // данные будут включены в ответ только если связь со складами была предварительно загружена.
-            'stocks' => StockResource::collection($this->whenLoaded('warehouses')),
+            // Связь warehouses() — belongsToMany через таблицу stocks, поэтому остаток лежит в pivot.
+            // Формируем корректную структуру вручную (передавать модели Warehouse в StockResource нельзя:
+            // у них нет полей warehouse_id/product_id/stock, что давало бы null в ответе).
+            // whenLoaded предотвращает проблему N+1 — блок добавляется только при предзагрузке связи.
+            'stocks' => $this->whenLoaded('warehouses', fn () => $this->warehouses->map(fn ($warehouse) => [
+                'warehouse_id' => $warehouse->id,
+                'warehouse'    => $warehouse->name,
+                'stock'        => (int) $warehouse->pivot->stock,
+            ])->values()),
         ];
     }
 }

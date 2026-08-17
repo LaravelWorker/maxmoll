@@ -36,9 +36,13 @@ return new class extends Migration
             // При удалении склада каскадно удаляются связанные с ним заказы.
             $table->foreignId('warehouse_id')->constrained('warehouses')->cascadeOnDelete();
             
-            // Статус заказа. Значения берутся из перечисления OrderStatus, 
-            // по умолчанию при создании устанавливается статус ACTIVE.
-            $table->enum('status', OrderStatus::values())->default(OrderStatus::ACTIVE->value);
+            // Статус заказа. Согласно ТЗ хранится как varchar(255) ("active", "completed", "canceled").
+            // Значение по умолчанию при создании — ACTIVE. Ограничение допустимых значений
+            // обеспечивается на уровне приложения (Enum-каст в модели Order и валидация в Request).
+            $table->string('status', 255)->default(OrderStatus::ACTIVE->value);
+
+            // Индекс по статусу ускоряет частые выборки активных заказов и расчёт резервов.
+            $table->index('status');
         });
     }
 
