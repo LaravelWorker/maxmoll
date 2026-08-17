@@ -1,11 +1,7 @@
 name: Claude Code Audit
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:
+  workflow_dispatch: # Запуск только вручную из вкладки Actions
 
 jobs:
   audit:
@@ -23,21 +19,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          npx @anthropic-ai/claude-code --non-interactive "$(cat prompt.txt)" > audit-report.md
-
-      - name: Post Audit Report to Pull Request
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const report = fs.readFileSync('audit-report.md', 'utf8');
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## 🤖 Отчет ИИ-аудита ТЗ\n\n${report}`
-            });
+          npx @anthropic-ai/claude-code --dangerously-skip-permissions -p "Проведи полный аудит проекта на соответствие требованиям из файла .github/TZ.md и выведи детальный отчет в формате Markdown." > audit-report.md
 
       - name: Upload Audit Artifact
         uses: actions/upload-artifact@v4
