@@ -159,7 +159,7 @@ class TransferService
             'warehouse_id' => $warehouseId,
             'product_id'   => $productId,
             'quantity'     => $quantity,
-            'doc_type'     => Transfer::class,
+            'doc_type'     => $model::class,
             'doc_id'       => $model->id,
             'created_at'   => $model->created_at,
         ]);
