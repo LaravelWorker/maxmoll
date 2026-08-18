@@ -211,11 +211,6 @@ class OrderService
 
             $physicalStock = $stockModel ? $stockModel->stock : 0;
 
-            if ($physicalStock < $requestedCount) {
-                $productName = Product::find($productId)?->name ?? "ID {$productId}";
-                throw new \Exception("Недостаточно товара {$productName}. Физический остаток: {$physicalStock}, требуется: {$requestedCount}.");
-            }
-
             // 2. Расчет зарезервированного товара в других активных заказах
             $reservedQuery = DB::table('order_items')
                 ->join('orders', 'order_items.order_id', '=', 'orders.id')
