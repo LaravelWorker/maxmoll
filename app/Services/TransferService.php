@@ -57,11 +57,6 @@ class TransferService
 
             // Получаем физический остаток с блокировкой строки на чтение/запись
             $physicalStock = $this->getLockedPhysicalStock($warehouseId, $productId);
-
-            if ($physicalStock < $requestedCount) {
-                throw new \Exception("Недостаточно товара на складе-отправителе. Физический остаток: {$physicalStock}, запрошено: {$requestedCount}.");
-            }
-
             $reservedInActiveOrders = $this->getReservedStock($warehouseId, $productId);
             $availableStock = $physicalStock - $reservedInActiveOrders;
 
