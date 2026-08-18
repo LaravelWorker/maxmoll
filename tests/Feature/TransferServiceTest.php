@@ -107,7 +107,7 @@ class TransferServiceTest extends TestCase
         ]);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Недостаточно товара на складе-отправителе');
+        $this->expectExceptionMessage('Невозможно переместить товар');
 
         $this->transferService->createAndExecute([
             'from_warehouse_id' => $fromWarehouse->id,

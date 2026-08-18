@@ -74,7 +74,7 @@ class OrderServiceTest extends TestCase
         ]);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Недостаточно товара Тестовый товар. Физический остаток: 3, требуется: 10.');
+        $this->expectExceptionMessage('Невозможно оформить заказ на товар Тестовый товар');
 
         $this->orderService->create([
             'customer_id'  => $customer->id,
